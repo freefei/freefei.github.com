@@ -315,11 +315,18 @@ $header-height: 30px;
 			text-indent: -9999px;
 			margin-right: 5px;
 			margin-bottom: 15px;
-			opacity: 0.5;
+			opacity: 0.8;
 			@include square(28px);
 			@include transition(0.3s);
 			&:hover{
 				opacity: 1;
+			}
+			&.github{
+				background: image-url('social/github.png') center no-repeat #2d2d2d;
+				border: 1px solid #2d2d2d;
+				&:hover{
+					border: 1px solid darken(#2d2d2d, 10%);
+				}
 			}
 			&.weibo{
 				background: image-url('social/weibo.png') center no-repeat #e32529;
@@ -356,8 +363,8 @@ $header-height: 30px;
 					border: 1px solid darken(#55CFF8, 10%);
 				}
 			}
-			&.github{
-				background: image-url('social/github.png') center no-repeat rgb(175,182,202);
+			&.email{
+				background: image-url('social/email.png') center no-repeat rgb(175,182,202);
 				border: 1px solid rgb(175,182,202);
 				&:hover{
 					border: 1px solid darken(rgb(175,182,202), 10%);
