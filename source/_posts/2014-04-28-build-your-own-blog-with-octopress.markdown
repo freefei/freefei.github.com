@@ -60,6 +60,8 @@ rake update_style             # update the template's style
 
 - [主题配置][1]
 - [增加新浪微博链接][2]
+- [Liquid Basics][3]
 
 [1]: https://github.com/shashankmehta/greyshade
 [2]: http://imallen.com/blog/2013/05/12/add-support-for-weibo-and-dribbble-to-greyshade.html
+[3]: http://docs.shopify.com/themes/liquid-basics
