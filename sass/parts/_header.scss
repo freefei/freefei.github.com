@@ -322,10 +322,10 @@ $header-height: 30px;
 				opacity: 1;
 			}
 			&.github{
-				background: image-url('social/github.png') center no-repeat #2d2d2d;
-				border: 1px solid #2d2d2d;
+				background: image-url('social/github.png') center no-repeat #26292c;
+				border: 1px solid #26292c;
 				&:hover{
-					border: 1px solid darken(#2d2d2d, 10%);
+					border: 1px solid darken(#26292c, 10%);
 				}
 			}
 			&.weibo{
