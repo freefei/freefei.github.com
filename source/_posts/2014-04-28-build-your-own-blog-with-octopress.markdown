@@ -6,6 +6,9 @@ comments: true
 categories: [Octopress]
 ---
 
+* Contents
+{:toc}
+
 一直想搭建一个自己的博客，开始付诸行动！
 
 刚刚接触到Octopress，总体感觉还是不错的，但是它不像segmentfault、oschina之类的平台，什么都具备，很多东西默认没有，需要自己配置，不过在玩的过程中总是能学到新东西的。
@@ -46,7 +49,7 @@ rake new_page["name"] 	# 创建新页面
 rake new_post["name"]	# 新建博文
 ```
 
-## 更新 Octopress
+## Step 5: 更新 Octopress
 
 ```
 git remote add octopress git://github.com/imathis/octopress.git
@@ -61,7 +64,9 @@ rake update_style             # update the template's style
 - [主题配置][1]
 - [增加新浪微博链接][2]
 - [Liquid Basics][3]
+- [添加目录][4]
 
 [1]: https://github.com/shashankmehta/greyshade
 [2]: http://imallen.com/blog/2013/05/12/add-support-for-weibo-and-dribbble-to-greyshade.html
 [3]: http://docs.shopify.com/themes/liquid-basics
+[4]: http://khaos.github.io/blog/2012/12/05/generating-toc-in-octopress/
