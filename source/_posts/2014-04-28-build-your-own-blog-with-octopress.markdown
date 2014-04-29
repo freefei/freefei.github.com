@@ -3,7 +3,7 @@ layout: post
 title: "使用Octopress搭建自己的博客"
 date: 2014-04-28 22:07:27 +0800
 comments: true
-categories: [Octopress, Blog]
+categories: [Octopress]
 ---
 
 一直想搭建一个自己的博客，开始付诸行动！
