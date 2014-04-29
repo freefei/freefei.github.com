@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-04-29T14:28:48+08:00</updated>
+  <updated>2014-04-29T15:51:23+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -87,6 +87,7 @@
 <ul>
 <li><a href="https://github.com/shashankmehta/greyshade">主题配置</a></li>
 <li><a href="http://imallen.com/blog/2013/05/12/add-support-for-weibo-and-dribbble-to-greyshade.html">增加新浪微博链接</a></li>
+<li><a href="http://docs.shopify.com/themes/liquid-basics">Liquid Basics</a></li>
 </ul>
 
 ]]></content>
