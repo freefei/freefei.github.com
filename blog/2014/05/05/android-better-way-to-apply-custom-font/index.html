@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="【译】Android：更好的自定义字体方法 情景 解决方案 1）Android默认方法 #1： 2）Android默认方法 #2： 3) 我的解决方案： 译者注 原文：http://vision-apps.blogspot.hk/2012/02/android-better-way-to- &hellip;">
+	<meta name="description" content="【译】Android：更好的自定义字体方法 情景 解决方案 1）Android默认方法 #1 2）Android默认方法 #2 3）我的解决方案 译者注 参考 原文：http://vision-apps.blogspot.hk/2012/02/android-better-way-to- &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -85,12 +85,13 @@
 	<div class="entry-content" itemprop="articleBody"><ul id="markdown-toc">
   <li><a href="#section">情景</a></li>
   <li><a href="#section-1">解决方案</a>    <ul>
-      <li><a href="#android-1">1）Android默认方法 #1：</a></li>
-      <li><a href="#android-2">2）Android默认方法 #2：</a></li>
-      <li><a href="#section-2">3) 我的解决方案：</a></li>
+      <li><a href="#android-1">1）Android默认方法 #1</a></li>
+      <li><a href="#android-2">2）Android默认方法 #2</a></li>
+      <li><a href="#section-2">3）我的解决方案</a></li>
     </ul>
   </li>
   <li><a href="#section-3">译者注</a></li>
+  <li><a href="#section-4">参考</a></li>
 </ul>
 
 <blockquote>
@@ -107,7 +108,7 @@
 
 <h3 id="section-1">解决方案</h3>
 
-<h4 id="android-1">1）Android默认方法 #1：</h4>
+<h4 id="android-1">1）Android默认方法 #1</h4>
 
 <p>你可以通过ID查找到View，然后挨个为它们设置字体。在单个View的情况下，它看起来也没有那么可怕。</p>
 
@@ -121,7 +122,7 @@
 
 <p>但是在很多TextView、Button等文本组件的情况下，我敢肯定你不会喜欢这个方法的。:D</p>
 
-<h4 id="android-2">2）Android默认方法 #2：</h4>
+<h4 id="android-2">2）Android默认方法 #2</h4>
 
 <p>你可以为每个文本组件创建一个子类，如TextView、Button等，然后在构造函数中加载自定义字体。</p>
 
@@ -197,7 +198,7 @@
 
 <p>在大多数情况下，这个方法还不赖，并且有一些优点（例如，切换字体粗细等等，字体可以在组件xml文件的typeface属性中定义）。但是我认为这个实现方法还是太重量级了，并且依赖大量的模板代码，为了一个替换字体的简单任务，有点儿得不偿失。</p>
 
-<h4 id="section-2">3) 我的解决方案：</h4>
+<h4 id="section-2">3）我的解决方案</h4>
 
 <p>理想的解决方案是自定义主题，然后应用到全局或者某个Activity。
 但不幸的是，Android的<code>android:typeface</code>属性只能用来设置系统内嵌的字体，而非用户自定义字体(例如assets文件中的字体)。这就是为什么我们无法避免在Java代码中加载并设置字体。</p>
@@ -277,6 +278,13 @@
 <p>目前我们的项目还没有使用这类DI框架，等以后引入了，使用第二种注入，写起来应该是很爽的。</p>
 
 <p>保持更新。</p>
+
+<h3 id="section-4">参考</h3>
+
+<ul>
+  <li><a href="http://www.javacodegeeks.com/2014/02/dependency-injection-options-for-java.html">DI框架</a></li>
+  <li><a href="http://stormzhang.github.io/openandroid/android/2014/01/12/android-butterknife/">ButterKnife</a></li>
+</ul>
 
 </div>
 
