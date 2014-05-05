@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-05-05T20:54:31+08:00</updated>
+  <updated>2014-05-05T21:34:00+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -26,6 +26,7 @@
       <li><a href="#section-2">3) 我的解决方案：</a></li>
     </ul>
   </li>
+  <li><a href="#section-3">译者注</a></li>
 </ul>
 
 <blockquote>
@@ -145,8 +146,9 @@
 
 <p>并且这行代码会用来加载所有的基于TextView的文本组件（TextView、Button、RadioButton、ToggleButton等等），而无需考虑界面的布局层级如何。</p>
 
-<p>标准(左)与自定义(右)字体的用法。
-<img src="http://1.bp.blogspot.com/-AYEjPw_05f4/T0uZyHZXwaI/AAAAAAAAAHk/PFjf0jEmvrs/s640/before+and+after.png" alt="Standard (left) and Custom (right) fonts usage." /></p>
+<p>标准(左)与自定义(右)字体的用法。</p>
+
+<p><img src="http://1.bp.blogspot.com/-AYEjPw_05f4/T0uZyHZXwaI/AAAAAAAAAHk/PFjf0jEmvrs/s640/before+and+after.png" alt="Standard (left) and Custom (right) fonts usage." /></p>
 
 <p>这是怎么做到的？非常简单：</p>
 
@@ -181,6 +183,36 @@
 <p>正如你所看到的，所需要做的仅仅是将基于TextView的文本组件从布局中遍历出来而已。</p>
 
 <p>你可以在这里下载到示例代码，里面有<a href="http://db.tt/i9S80Mgr"><code>FontHelper</code></a>的具体用法。</p>
+
+<h3 id="section-3">译者注</h3>
+
+<p>在多个项目中，我都碰到过类似的需求，早期采用的是第二种实现方法，但是缺点在于对于第三方组件，你需要去修改别人的代码，才能实现自定义字体，这恰恰违反了OC（Open &amp; Close）原则，对扩展开放，对修改封闭。</p>
+
+<p>刚看到第三种的时候，也是惊为天人，姑且不说结果，我觉得这种活跃的思路非常重要，很值得学习参考。</p>
+
+<p>但是最后被team里的人否决了，理由一个是违背组件设计原则，实现方式略嫌粗暴。后来我仔细想想，一个是要做好内存管理（似乎会引起内存问题），视图状态改变，也要重复加载（横竖屏、onResume等），也绝对不是简单的活儿。</p>
+
+<p>所以暂定使用第一种方法，typeface使用单例，需要时设置字体。</p>
+
+<p>我个人觉得第一种还是个体力活，而且到后来，这个代码重复率还是非常高的，这又违背了DRY原则。</p>
+
+<p>在地铁上的时候，突然想到DI（Dependency Inject）。已经有一些DI的框架，如ButterKnife，那写出来应该是这样：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="nd">@CustomFont</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">textView</span><span class="o">)</span> <span class="n">TextView</span> <span class="n">textView</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>or</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="nd">@InjectView</span><span class="o">(</span><span class="n">id</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">textView</span><span class="o">,</span> <span class="n">customFont</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span> <span class="n">View</span> <span class="n">anyView</span>
+</span><span class="line"><span class="nd">@InjectView</span><span class="o">(</span><span class="n">id</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">textView</span><span class="o">,</span> <span class="n">customFont</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span> <span class="n">customFont</span><span class="o">=</span><span class="s">&quot;fonts/ltfz.ttf&quot;</span><span class="o">)</span> <span class="n">View</span> <span class="n">anyView</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>这样写出来代码相比重复写setTypeface要好一些。</p>
+
+<p>目前我们的项目还没有使用这类DI框架，等以后引入了，使用第二种注入，写起来应该是很爽的。</p>
+
+<p>保持更新。</p>
 
 ]]></content>
   </entry>
