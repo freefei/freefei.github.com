@@ -21,7 +21,7 @@ categories: [Android]
 
 ### 解决方案
 
-#### 1）Android默认方法 #1：
+#### 1）Android默认方法 #1
 
 你可以通过ID查找到View，然后挨个为它们设置字体。在单个View的情况下，它看起来也没有那么可怕。
 
@@ -33,7 +33,7 @@ view.setTypeface(customFont);
 
 但是在很多TextView、Button等文本组件的情况下，我敢肯定你不会喜欢这个方法的。:D
 
-#### 2）Android默认方法 #2：
+#### 2）Android默认方法 #2
 
 你可以为每个文本组件创建一个子类，如TextView、Button等，然后在构造函数中加载自定义字体。
 
@@ -81,7 +81,7 @@ public class BrandTextView extends TextView {
 
 在大多数情况下，这个方法还不赖，并且有一些优点（例如，切换字体粗细等等，字体可以在组件xml文件的typeface属性中定义）。但是我认为这个实现方法还是太重量级了，并且依赖大量的模板代码，为了一个替换字体的简单任务，有点儿得不偿失。
 
-#### 3) 我的解决方案：
+#### 3）我的解决方案
 
 理想的解决方案是自定义主题，然后应用到全局或者某个Activity。
 但不幸的是，Android的```android:typeface```属性只能用来设置系统内嵌的字体，而非用户自定义字体(例如assets文件中的字体)。这就是为什么我们无法避免在Java代码中加载并设置字体。
@@ -126,7 +126,7 @@ public static void applyFont(final Context context, final View root, final Strin
 
 刚看到第三种的时候，也是惊为天人，姑且不说结果，我觉得这种活跃的思路非常重要，很值得学习参考。
 
-但是最后被team里的人否决了，理由一个是违背组件设计原则，实现方式略嫌粗暴。后来我仔细想想，一个是要做好内存管理（似乎会引起内存问题），视图状态改变，也要重复加载（横竖屏、onResume等），也绝对不是简单的活儿。
+但是最后被team里的人否决了，理由是违背组件设计原则，实现方式略嫌粗暴。后来我仔细想想，一个是要做好内存管理（似乎会引起内存问题），视图状态改变，也要重复加载（横竖屏、onResume等），也绝对不是简单的活儿。
 
 所以暂定使用第一种方法，typeface使用单例，需要时设置字体。
 
@@ -149,7 +149,14 @@ or
 
 保持更新。
  
+### 参考
+
+- [DI框架][5]
+- [ButterKnife][6]
+
 [1]: http://vision-apps.blogspot.hk/2012/02/android-better-way-to-apply-custom-font.html
 [2]: http://kevindion.com/2011/01/custom-xml-attributes-for-android-widgets/
 [3]: http://1.bp.blogspot.com/-AYEjPw_05f4/T0uZyHZXwaI/AAAAAAAAAHk/PFjf0jEmvrs/s640/before+and+after.png
 [4]: http://db.tt/i9S80Mgr
+[5]: http://www.javacodegeeks.com/2014/02/dependency-injection-options-for-java.html
+[6]: http://stormzhang.github.io/openandroid/android/2014/01/12/android-butterknife/
