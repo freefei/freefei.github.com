@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-05-05T21:40:18+08:00</updated>
+  <updated>2014-05-05T21:43:30+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -150,7 +150,7 @@ public static void applyFont(final Context context, final View root, final Strin
 
 <p>刚看到第三种的时候，也是惊为天人，姑且不说结果，我觉得这种活跃的思路非常重要，很值得学习参考。</p>
 
-<p>但是最后被team里的人否决了，理由一个是违背组件设计原则，实现方式略嫌粗暴。后来我仔细想想，一个是要做好内存管理（似乎会引起内存问题），视图状态改变，也要重复加载（横竖屏、onResume等），也绝对不是简单的活儿。</p>
+<p>但是最后被team里的人否决了，理由是违背组件设计原则，实现方式略嫌粗暴。后来我仔细想想，一个是要做好内存管理（似乎会引起内存问题），视图状态改变，也要重复加载（横竖屏、onResume等），也绝对不是简单的活儿。</p>
 
 <p>所以暂定使用第一种方法，typeface使用单例，需要时设置字体。</p>
 
