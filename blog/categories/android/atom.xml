@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-05-05T18:40:05+08:00</updated>
+  <updated>2014-05-05T20:54:31+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -23,12 +23,13 @@
   <li><a href="#section-1">解决方案</a>    <ul>
       <li><a href="#android-1">1）Android默认方法 #1：</a></li>
       <li><a href="#android-2">2）Android默认方法 #2：</a></li>
+      <li><a href="#section-2">3) 我的解决方案：</a></li>
     </ul>
   </li>
 </ul>
 
 <blockquote>
-  <p>原文：<a href="1">http://vision-apps.blogspot.hk/2012/02/android-better-way-to-apply-custom-font.html</a></p>
+  <p>原文：<a href="http://vision-apps.blogspot.hk/2012/02/android-better-way-to-apply-custom-font.html">http://vision-apps.blogspot.hk/2012/02/android-better-way-to-apply-custom-font.html</a></p>
 </blockquote>
 
 <p>在一个应用中，我需要在所有的UI组件中使用客户提供的字体。这听起来似乎是个很稀松平常的任务，不是吗？是的，我当时也是这么想的。然后我震惊了，Android竟然没有提供一个简单优雅的方式来做这件事情!</p>
@@ -97,10 +98,48 @@ public class BrandTextView extends TextView {</p>
 <p>为了不占篇幅介绍这么基础的东西，这里有一篇不错的文章告诉你怎么自定义控件属性。</p>
 
 <blockquote>
-  <p><a href="2">http://kevindion.com/2011/01/custom-xml-attributes-for-android-widgets/</a></p>
+  <p><a href="http://kevindion.com/2011/01/custom-xml-attributes-for-android-widgets/">http://kevindion.com/2011/01/custom-xml-attributes-for-android-widgets/</a></p>
 </blockquote>
 
 <p>在大多数情况下，这个方法还不赖，并且有一些优点（例如，切换字体粗细等等，字体可以在组件xml文件的typeface属性中定义）。但是我认为这个实现方法还是太重量级了，并且依赖大量的模板代码，为了一个替换字体的简单任务，有点儿得不偿失。</p>
+
+<h4 id="section-2">3) 我的解决方案：</h4>
+
+<p>理想的解决方案是自定义主题，然后应用到全局或者某个Activity。
+但不幸的是，Android的<code>android:typeface</code>属性只能用来设置系统内嵌的字体，而非用户自定义字体(例如assets文件中的字体)。这就是为什么我们无法避免在Java代码中加载并设置字体。</p>
+
+<p>所以我决定创建一个帮助类，使得这个操作尽可能的简单。使用方法：</p>
+
+<p><code>
+FontHelper.applyFont(context, findViewById(R.id.activity_root), "fonts/YourCustomFont.ttf");
+</code></p>
+
+<p>并且这行代码会用来加载所有的基于TextView的文本组件（TextView、Button、RadioButton、ToggleButton等等），而无需考虑界面的布局层级如何。</p>
+
+<p>标准(左)与自定义(右)字体的用法。
+<img src="http://1.bp.blogspot.com/-AYEjPw_05f4/T0uZyHZXwaI/AAAAAAAAAHk/PFjf0jEmvrs/s640/before+and+after.png" alt="Standard (left) and Custom (right) fonts usage." /></p>
+
+<p>这是怎么做到的？非常简单：</p>
+
+<p><code>java
+public static void applyFont(final Context context, final View root, final String fontName) {
+    try {
+        if (root instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) root;
+            for (int i = 0; i &lt; viewGroup.getChildCount(); i++)
+                applyFont(context, viewGroup.getChildAt(i), fontName);
+        } else if (root instanceof TextView)
+            ((TextView) root).setTypeface(Typeface.createFromAsset(context.getAssets(), fontName));
+    } catch (Exception e) {
+        Log.e(TAG, String.format("Error occured when trying to apply %s font for %s view", fontName, root));
+        e.printStackTrace();
+    }
+}
+</code></p>
+
+<p>正如你所看到的，所需要做的仅仅是将基于TextView的文本组件从布局中遍历出来而已。</p>
+
+<p>你可以在这里下载到示例代码，里面有<a href="http://db.tt/i9S80Mgr"><code>FontHelper</code></a>的具体用法。</p>
 
 ]]></content>
   </entry>
