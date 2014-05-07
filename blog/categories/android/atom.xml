@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-05-07T22:43:31+08:00</updated>
+  <updated>2014-05-07T22:55:59+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -163,7 +163,7 @@ or</p>
 
 <p><code>
 @InjectView(id=R.id.textView, customFont=true) View anyView
-@InjectView(id=R.id.textView, customFont=true, customFont="fonts/ltfz.ttf") View anyView
+@InjectView(id=R.id.textView, customFont=true, font="fonts/ltfz.ttf") View anyView
 </code>
 这样写出来代码相比重复写setTypeface要好一些。</p>
 
