@@ -140,7 +140,7 @@ or
 
 ```
 @InjectView(id=R.id.textView, customFont=true) View anyView
-@InjectView(id=R.id.textView, customFont=true, customFont="fonts/ltfz.ttf") View anyView
+@InjectView(id=R.id.textView, customFont=true, font="fonts/ltfz.ttf") View anyView
 ```
 这样写出来代码相比重复写setTypeface要好一些。
 
