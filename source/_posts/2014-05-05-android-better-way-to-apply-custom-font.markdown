@@ -94,9 +94,8 @@ FontHelper.applyFont(context, findViewById(R.id.activity_root), "fonts/YourCusto
 
 并且这行代码会用来加载所有的基于TextView的文本组件（TextView、Button、RadioButton、ToggleButton等等），而无需考虑界面的布局层级如何。
 
-标准(左)与自定义(右)字体的用法。
 
-![Standard (left) and Custom (right) fonts usage.][3]
+![标准(左)与自定义(右)字体的用法。][3]
 
 这是怎么做到的？非常简单：
 
