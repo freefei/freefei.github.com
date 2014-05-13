@@ -26,7 +26,7 @@ rake install     # 安装默认的Octopress主题
 
 ```
 git remote rm origin
-git remote add origin git@github.com:stormzhang/stormzhang.github.com.git
+git remote add origin git@github.com:ryanhoo/ryanhoo.github.com.git
 git remote add octopress git://github.com/imathis/octopress.git  # 为了octopress的升级而添加
 ```
 
