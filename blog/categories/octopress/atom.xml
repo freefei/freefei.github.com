@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-05-07T22:55:59+08:00</updated>
+  <updated>2014-05-13T17:37:27+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -44,7 +44,7 @@ rake install     # 安装默认的Octopress主题
 
 <p><code>
 git remote rm origin
-git remote add origin git@github.com:stormzhang/stormzhang.github.com.git
+git remote add origin git@github.com:ryanhoo/ryanhoo.github.com.git
 git remote add octopress git://github.com/imathis/octopress.git  # 为了octopress的升级而添加
 </code></p>
 
