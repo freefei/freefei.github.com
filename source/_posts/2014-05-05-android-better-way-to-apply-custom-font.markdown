@@ -155,7 +155,7 @@ or
 
 [1]: http://vision-apps.blogspot.hk/2012/02/android-better-way-to-apply-custom-font.html
 [2]: http://kevindion.com/2011/01/custom-xml-attributes-for-android-widgets/
-[3]: images/blog/2014-05-05-before and after.png
+[3]: /images/blog/2014-05-05-before and after.png
 [4]: http://db.tt/i9S80Mgr
 [5]: http://www.javacodegeeks.com/2014/02/dependency-injection-options-for-java.html
 [6]: http://stormzhang.github.io/openandroid/android/2014/01/12/android-butterknife/
