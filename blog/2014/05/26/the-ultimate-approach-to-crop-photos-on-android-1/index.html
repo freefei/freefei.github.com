@@ -1,0 +1,243 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Android大图片裁剪终极解决方案（上：原理分析） - Ryan Hoo</title>
+	<meta name="author" content="Ryan Hoo">
+
+	
+	<meta name="description" content="Android大图片裁剪终极解决方案（上：原理分析） 约几个月前，我正为公司的APP在Android手机上实现拍照截图而烦恼不已。 上网搜索，确实有不少的例子，大多都是抄来抄去，而且水平多半处于demo的样子，可以用来讲解知识点，但是一碰到实际项目，就漏洞百出。 当时我用大众化的解决方案， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ryan Hoo" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ryanhoo.github.io/blog/2014/05/26/the-ultimate-approach-to-crop-photos-on-android-1/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("ryan.hoo.j@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">Ryan Hoo</a></h1>
+<p class="subtitle">Hi! This is ryan's tech utopia. I am on my way to a full-stack engineer. Currently focusing on making awesome android apps and hybrid technology. Big fan of Cordova, AngularJS, CoffeeScript and much more...</p>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/categories">Categories</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+    <li><a href="/about/">About</a></li>
+</ul></nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="github" href="https://github.com/ryanhoo" title="GitHub">GitHub</a>
+		
+		
+		<a class="email" href="mailto:ryan.hoo.j@gmail.com" title="Email">Email</a>
+		
+		
+		<a class="weibo" href="http://www.weibo.com/sanyufang" title="Weibo">Weibo</a>
+		
+		
+		
+		<a class="google" href="https://plus.google.com/+RyanHooGeek" rel="author" title="Google+">Google+</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Android大图片裁剪终极解决方案（上：原理分析）</h1>
+	<div class="entry-content" itemprop="articleBody">
+<p>约几个月前，我正为公司的APP在Android手机上实现拍照截图而烦恼不已。</p>
+
+<p>上网搜索，确实有不少的例子，大多都是抄来抄去，而且水平多半处于demo的样子，可以用来讲解知识点，但是一碰到实际项目，就漏洞百出。</p>
+
+<p>当时我用大众化的解决方案，暂时性的做了一个拍照截图的功能，似乎看起来很不错。可是问题随之而来，我用的是小米手机，在别的手机上都运行正常，在小米这里却总是碰钉子。虽然我是个理性的米粉，但是也暗地里把小米的工程师问候了个遍。真是惭愧！</p>
+
+<p>翻文档也找不出个答案来，我一直对<strong>com.android.camera.action.CROP</strong>持有大大的疑问，它是从哪里来，它能干什么，它接收处理什么类型的数据？Google对此却讳莫如深，在官方文档中只有Intent中有只言片语言及，却不甚详尽。</p>
+
+<p>随着项目的驱动，我不能抱着不了解原理就不往前走的心态，唯一要做的，是解决问题。最后在德问上找到一条解决方案，说是哪怕是大米也没问题。当时乐呵呵将代码改了改，确实在所有的手机上跑起来了，一时如释重负，对这个的疑问也抛诸脑后了。</p>
+
+<p>直到月前，BOSS要求将拍照上传到服务器的图片分辨率加倍。OK，加倍简单，增加<code>outputX</code>以及<code>outputY</code>不就得了？</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputX&quot;</span><span class="o">,</span> <span class="n">outputX</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputY&quot;</span><span class="o">,</span> <span class="n">outputY</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>这一增加，吓了我一跳。BOSS的手机拍到的照片几乎就是个缩略图，但是被我问候了全体工程师的小米在这个时候就体现出国产神机的范儿了，小米上的尺寸一切正常。这个为什么呢？我大致了解原因，却不知道如何解决。</p>
+
+<p>在Android中，Intent触发Camera程序，拍好照片后，将会返回数据，但是考虑到内存问题，Camera不会将全尺寸的图像返回给调用的Activity，一般情况下，有可能返回的是缩略图，比如<strong>120*160px</strong>。</p>
+
+<p>这是为什么呢？这不是一个Bug，而是经过精心设计的，却对开发者不透明。</p>
+
+<p>以我的小米手机为例，摄像头800W像素，根据我目前设置拍出来的图片尺寸为<strong>3200*2400px</strong>。有人说，那就返回呗，大不了耗1-2M的内存，不错，这个尺寸的图片确实只有1.8M左右的大小。但是你想不到的是，这个尺寸对应的Bitmap会耗光你应用程序的所有内存。Android出于安全性考虑，只会给你一个寒碜的缩略图。</p>
+
+<p>在Android2.3中，默认的Bitmap为32位，类型是<code>ARGB_8888</code>，也就意味着一个像素点占用4个字节的内存。我们来做一个简单的计算题：</p>
+
+<p><code>3200*2400*4 bytes =   30M</code></p>
+
+<p>如此惊人的数字！哪怕你愿意为一张生命周期超不过10s的位图愿意耗费这么巨大的内存，Android也不会答应的。</p>
+
+<blockquote>
+  <p>Mobile devices typically have constrained system resources. 
+Android devices can have as little as 16MB of memory available to a single application.</p>
+</blockquote>
+
+<p>这是Android Doc的原文，虽然不同手机系统的厂商可能围绕16M这个数字有微微的上调，但是这30M，一般的手机还真挥霍不起。也只有小米这种牛机，内存堪比个人PC，本着土财主般挥金如土的霸气才能做到。</p>
+
+<p>OK，说了这么多，无非是吐吐苦水，爆爆个人经历而已，实际的解决方案在哪里呢？</p>
+
+<p>我也是Google到的，话说一般百度不了的问题，那就<code>Google</code>或者直接<code>StackOverFlow</code>，只不过得看英文罢了。</p>
+
+<p>最后翻来覆去，我在国外的一个Android团队的博客中找到了相应的方案，印证了我的猜想同时也给出了实际的代码。</p>
+
+<p>我将这篇文章翻译成了中文，作为本博客的基础，建议详细看看。</p>
+
+<p><a href="http://my.oschina.net/ryanhoo/blog/86843">【译】如何使用Android MediaStore裁剪大图片</a></p>
+
+<p>这篇博客了不起的地方在于解决了Android对返回图片的大小限制，并且详细解释了裁剪图片的<code>Intent</code>附加数据的具体含义。我只是站在巨人的肩膀上，改善方案，适应更广泛需求而已。</p>
+
+<p>拿图说事儿：</p>
+
+<p><img src="/images/blog/android/144805_wCcI_245415.png" alt="Intent Options" /></p>
+
+<p><code>Intent("com.android.camera.action.CROP")</code>对应的所有可选数据都一目了然。在了解上面个个选项的含义之后，我们将目光着眼于三个极为重要的选项：</p>
+
+<ul>
+  <li>data</li>
+  <li>MediaStore.EXTRA_OUTPUT</li>
+  <li>return-data</li>
+</ul>
+
+<p><code>data和MediaStore.EXTRA_OUTPUT</code>都是可选的传入数据选项，你可以选择设置data为Bitmap，或者将相应的数据与URI关联起来，你也可以选择是否返回数据（return-data: true）。</p>
+
+<p>为什么还有不用返回数据的选项？如果对URI足够了解的话，应该知道URI与File相似，你所有的操作如裁剪将数据都保存在了URI中，你已经持有了相应的URI，也就无需多此一举，再返回Bitmap了。</p>
+
+<p>前面已经说到，可以设置data为Bitmap，但是这种操作的限制在于，你的Bitmap不能太大。因此，我们前进的思路似乎明确了：截大图用URI，小图用Bitmap。</p>
+
+<p>我将这个思路整理成一张图片：</p>
+
+<p><img src="/images/blog/android/151831_7gRC_245415.png" alt="idea" /></p>
+
+<p>这篇主要让大家了解需求的来源，以及如何去思考分析并解决问题。下一篇博客将介绍具体的操作。</p>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style addthis_16x16_style">
+	
+	<a class="addthis_button_sinaweibo"></a>
+	
+	
+	<a class="addthis_button_facebook"></a>
+	
+	
+	<a class="addthis_button_twitter"></a>
+	
+	
+	
+	<a class="addthis_button_compact"></a>
+	<a class="addthis_counter addthis_bubble_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Ryan Hoo
+
+<br/>
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'ryanhoo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ryanhoo.github.io/blog/2014/05/26/the-ultimate-approach-to-crop-photos-on-android-1/';
+        var disqus_url = 'http://ryanhoo.github.io/blog/2014/05/26/the-ultimate-approach-to-crop-photos-on-android-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42350714-2']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+		</div>
+	</div>
+</body>
+</html>
