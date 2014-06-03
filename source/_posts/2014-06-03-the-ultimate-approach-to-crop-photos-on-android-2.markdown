@@ -28,7 +28,7 @@ Uri imageUri = Uri.parse(IMAGE_FILE_LOCATION);//The Uri to store the big bitmap
 
 根据我们上一篇博客的分析，我准备好了两个实例的Intent。
 
-### 一、从相册截大图：
+#### 一、从相册截大图：
 
 ```java
 Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
@@ -46,7 +46,7 @@ intent.putExtra("noFaceDetection", true); // no face detection
 startActivityForResult(intent, CHOOSE_BIG_PICTURE);
 ```
 
-### 二、从相册截小图
+#### 二、从相册截小图
 
 ```java
 Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
@@ -63,29 +63,29 @@ intent.putExtra("noFaceDetection", true); // no face detection
 startActivityForResult(intent, CHOOSE_SMALL_PICTURE);
 ```
 
-### 三、对应的onActivityResult可以这样处理返回的数据
+#### 三、对应的onActivityResult可以这样处理返回的数据
 
 ```java
 switch (requestCode) {
-	case CHOOSE_BIG_PICTURE:
-		Log.d(TAG, "CHOOSE_BIG_PICTURE: data = " + data);//it seems to be null
-		if(imageUri != null){
-			Bitmap bitmap = decodeUriAsBitmap(imageUri);//decode bitmap
-			imageView.setImageBitmap(bitmap);
-		}
-	break;
-	case CHOOSE_SMALL_PICTURE:
-		if(data != null){
-			Bitmap bitmap = data.getParcelableExtra("data");
-			imageView.setImageBitmap(bitmap);
-		}else{
-			Log.e(TAG, "CHOOSE_SMALL_PICTURE: data = " + data);
-		}
-	break;
+case CHOOSE_BIG_PICTURE:
+	Log.d(TAG, "CHOOSE_BIG_PICTURE: data = " + data);//it seems to be null
+	if(imageUri != null){
+		Bitmap bitmap = decodeUriAsBitmap(imageUri);//decode bitmap
+		imageView.setImageBitmap(bitmap);
+	}
+break;
+case CHOOSE_SMALL_PICTURE:
+	if(data != null){
+		Bitmap bitmap = data.getParcelableExtra("data");
+		imageView.setImageBitmap(bitmap);
+	}else{
+		Log.e(TAG, "CHOOSE_SMALL_PICTURE: data = " + data);
+	}
+break;
 }
 ```
 
-### 效果图
+#### 效果图
 
 ![大图][1]
 
