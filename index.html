@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="May 26th, 2014 Android Comments Android大图片裁剪终极解决方案（上：原理分析） 约几个月前，我正为公司的APP在Android手机上实现拍照截图而烦恼不已。 上网搜索，确实有不少的例子，大多都是抄来抄去，而且水平多半处于demo的样子，可以用来讲解知识点， &hellip;">
+	<meta name="description" content="Jun 3rd, 2014 Android Comments Android大图片裁剪终极解决方案（下：拍照截图） 上一篇博客中，我们学习到了如何使用Android相册截图。在这篇博客中，我将向大家展示如何拍照截图。 拍照截图有点儿特殊，要知道， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,343 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T22:34:51+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>Android</a>
+
+
+</div>
+		
+			<span class="comments"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-3/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-3/" itemprop="url">Android大图片裁剪终极解决方案（下：拍照截图）</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>上一篇博客中，我们学习到了如何使用Android相册截图。在这篇博客中，我将向大家展示如何拍照截图。</p>
+
+<p>拍照截图有点儿特殊，要知道，现在的Android智能手机的摄像头都是几百万的像素，拍出来的图片都是非常大的。因此，我们不能像对待相册截图一样使用Bitmap小图，无论大图小图都统一使用Uri进行操作。</p>
+
+<h4 id="uri">一、首先准备好需要使用到的Uri：</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">IMAGE_FILE_LOCATION</span> <span class="o">=</span> <span class="s">&quot;file:///sdcard/temp.jpg&quot;</span><span class="o">;</span><span class="c1">//temp file</span>
+</span><span class="line"><span class="n">Uri</span> <span class="n">imageUri</span> <span class="o">=</span> <span class="n">Uri</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">IMAGE_FILE_LOCATION</span><span class="o">);</span><span class="c1">//The Uri to store the big bitmap</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="mediastoreactionimagecapturecamera">二、使用MediaStore.ACTION_IMAGE_CAPTURE可以轻松调用Camera程序进行拍照：</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">MediaStore</span><span class="o">.</span><span class="na">ACTION_IMAGE_CAPTURE</span><span class="o">);</span><span class="c1">//action is capture</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">MediaStore</span><span class="o">.</span><span class="na">EXTRA_OUTPUT</span><span class="o">,</span> <span class="n">imageUri</span><span class="o">);</span>
+</span><span class="line"><span class="n">startActivityForResult</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span> <span class="n">TAKE_BIG_PICTURE</span><span class="o">);</span><span class="c1">//or TAKE_SMALL_PICTURE</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="onactivityresulturiuri">三、接下来就可以在 onActivityResult中拿到返回的数据（Uri），并将Uri传递给截图的程序。</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="k">switch</span> <span class="o">(</span><span class="n">requestCode</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line"><span class="k">case</span> <span class="nl">TAKE_BIG_PICTURE:</span>
+</span><span class="line">	<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;TAKE_BIG_PICTURE: data = &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">);</span><span class="c1">//it seems to be null</span>
+</span><span class="line">	<span class="c1">//TODO sent to crop</span>
+</span><span class="line">	<span class="n">cropImageUri</span><span class="o">(</span><span class="n">imageUri</span><span class="o">,</span> <span class="mi">800</span><span class="o">,</span> <span class="mi">400</span><span class="o">,</span> <span class="n">CROP_BIG_PICTURE</span><span class="o">);</span>
+</span><span class="line">	
+</span><span class="line">	<span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="k">case</span> <span class="nl">TAKE_SMALL_PICTURE:</span>
+</span><span class="line">	<span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;TAKE_SMALL_PICTURE: data = &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">);</span>
+</span><span class="line">	<span class="c1">//TODO sent to crop </span>
+</span><span class="line">	<span class="n">cropImageUri</span><span class="o">(</span><span class="n">imageUri</span><span class="o">,</span> <span class="mi">300</span><span class="o">,</span> <span class="mi">150</span><span class="o">,</span> <span class="n">CROP_SMALL_PICTURE</span><span class="o">);</span>
+</span><span class="line">	
+</span><span class="line">	<span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>可以看到，无论是拍大图片还是小图片，都是使用的Uri，只是尺寸不同而已。我们将这个操作封装在一个方法里面。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">cropImageUri</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="kt">int</span> <span class="n">outputX</span><span class="o">,</span> <span class="kt">int</span> <span class="n">outputY</span><span class="o">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="o">){</span>
+</span><span class="line">	<span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="s">&quot;com.android.camera.action.CROP&quot;</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">setDataAndType</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="s">&quot;image/*&quot;</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;crop&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;aspectX&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;aspectY&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputX&quot;</span><span class="o">,</span> <span class="n">outputX</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputY&quot;</span><span class="o">,</span> <span class="n">outputY</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;scale&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">MediaStore</span><span class="o">.</span><span class="na">EXTRA_OUTPUT</span><span class="o">,</span> <span class="n">uri</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;return-data&quot;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputFormat&quot;</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">.</span><span class="na">CompressFormat</span><span class="o">.</span><span class="na">JPEG</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class="line">	<span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;noFaceDetection&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span> <span class="c1">// no face detection</span>
+</span><span class="line">	<span class="n">startActivityForResult</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span> <span class="n">requestCode</span><span class="o">);</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="section">四、最后一步，我们已经将数据传入裁剪图片程序，接下来要做的就是处理返回的数据了：</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="k">switch</span> <span class="o">(</span><span class="n">requestCode</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line"><span class="k">case</span> <span class="nl">CROP_BIG_PICTURE:</span><span class="c1">//from crop_big_picture</span>
+</span><span class="line">	<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;CROP_BIG_PICTURE: data = &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">);</span><span class="c1">//it seems to be null</span>
+</span><span class="line">	<span class="k">if</span><span class="o">(</span><span class="n">imageUri</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">		<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">decodeUriAsBitmap</span><span class="o">(</span><span class="n">imageUri</span><span class="o">);</span>
+</span><span class="line">		<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	<span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="k">case</span> <span class="nl">CROP_SMALL_PICTURE:</span>
+</span><span class="line">	<span class="k">if</span><span class="o">(</span><span class="n">imageUri</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">		<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">decodeUriAsBitmap</span><span class="o">(</span><span class="n">imageUri</span><span class="o">);</span>
+</span><span class="line">		<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class="line">		<span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;CROP_SMALL_PICTURE: data = &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	<span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="k">default</span><span class="o">:</span>
+</span><span class="line">	<span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="section-1">效果图：</h4>
+
+<p><img src="images/blog/android/184229_tlMc_245415.gif" alt="截图演示" /></p>
+
+<blockquote>
+  <p>代码托管于GitHub，会不定期更新：<a href="https://github.com/ryanhoo/PhotoCropper">https://github.com/ryanhoo/PhotoCropper</a></p>
+</blockquote>
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T22:21:35+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>Android</a>
+
+
+</div>
+		
+			<span class="comments"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/" itemprop="url">Android大图片裁剪终极解决方案（中：从相册截图）</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在这篇博客中，我将向大家展示如何从相册截图。</p>
+
+<p>上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解Android本身的限制，以及我们应当采取的实现方案。</p>
+
+<p>根据我们的分析与总结，图片的来源有拍照和相册，而可采取的操作有</p>
+
+<ul>
+  <li>使用Bitmap并返回数据</li>
+  <li>使用Uri不返回数据</li>
+</ul>
+
+<p>前面我们了解到，使用Bitmap有可能会导致图片过大，而不能返回实际大小的图片，我将采用大图Uri，小图Bitmap的数据存储方式。</p>
+
+<p>我们将要使用到URI来保存拍照后的图片：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">IMAGE_FILE_LOCATION</span> <span class="o">=</span> <span class="s">&quot;file:///sdcard/temp.jpg&quot;</span><span class="o">;</span><span class="c1">//temp file</span>
+</span><span class="line"><span class="n">Uri</span> <span class="n">imageUri</span> <span class="o">=</span> <span class="n">Uri</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">IMAGE_FILE_LOCATION</span><span class="o">);</span><span class="c1">//The Uri to store the big bitmap</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>不难知道，我们从相册选取图片的<strong>Action</strong>为<code>Intent.ACTION_GET_CONTENT</code>。</p>
+
+<p>根据我们上一篇博客的分析，我准备好了两个实例的Intent。</p>
+
+<h4 id="section">一、从相册截大图：</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_GET_CONTENT</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;image/*&quot;</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;crop&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;aspectX&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;aspectY&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputX&quot;</span><span class="o">,</span> <span class="mi">600</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputY&quot;</span><span class="o">,</span> <span class="mi">300</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;scale&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;return-data&quot;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">MediaStore</span><span class="o">.</span><span class="na">EXTRA_OUTPUT</span><span class="o">,</span> <span class="n">imageUri</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputFormat&quot;</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">.</span><span class="na">CompressFormat</span><span class="o">.</span><span class="na">JPEG</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;noFaceDetection&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span> <span class="c1">// no face detection</span>
+</span><span class="line"><span class="n">startActivityForResult</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span> <span class="n">CHOOSE_BIG_PICTURE</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="section-1">二、从相册截小图</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_GET_CONTENT</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;image/*&quot;</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;crop&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;aspectX&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;aspectY&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputX&quot;</span><span class="o">,</span> <span class="mi">200</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputY&quot;</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;scale&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;return-data&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;outputFormat&quot;</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">.</span><span class="na">CompressFormat</span><span class="o">.</span><span class="na">JPEG</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class="line"><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;noFaceDetection&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span> <span class="c1">// no face detection</span>
+</span><span class="line"><span class="n">startActivityForResult</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span> <span class="n">CHOOSE_SMALL_PICTURE</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="onactivityresult">三、对应的onActivityResult可以这样处理返回的数据</h4>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="k">switch</span> <span class="o">(</span><span class="n">requestCode</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line"><span class="k">case</span> <span class="nl">CHOOSE_BIG_PICTURE:</span>
+</span><span class="line">	<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;CHOOSE_BIG_PICTURE: data = &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">);</span><span class="c1">//it seems to be null</span>
+</span><span class="line">	<span class="k">if</span><span class="o">(</span><span class="n">imageUri</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">		<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">decodeUriAsBitmap</span><span class="o">(</span><span class="n">imageUri</span><span class="o">);</span><span class="c1">//decode bitmap</span>
+</span><span class="line">		<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line"><span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="k">case</span> <span class="nl">CHOOSE_SMALL_PICTURE:</span>
+</span><span class="line">	<span class="k">if</span><span class="o">(</span><span class="n">data</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">		<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getParcelableExtra</span><span class="o">(</span><span class="s">&quot;data&quot;</span><span class="o">);</span>
+</span><span class="line">		<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class="line">		<span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;CHOOSE_SMALL_PICTURE: data = &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line"><span class="k">break</span><span class="o">;</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="section-2">效果图</h4>
+
+<p><img src="/images/blog/android/183645_yuLJ_245415.gif" alt="大图" /></p>
+
+<p><img src="/images/blog/android/183707_DnNy_245415.gif" alt="小图" /></p>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">

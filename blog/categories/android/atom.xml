@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-05-26T17:59:25+08:00</updated>
+  <updated>2014-06-03T22:42:26+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -12,6 +12,197 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android大图片裁剪终极解决方案（下：拍照截图）]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-3/"/>
+    <updated>2014-06-03T22:34:51+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-3</id>
+    <content type="html"><![CDATA[<p>上一篇博客中，我们学习到了如何使用Android相册截图。在这篇博客中，我将向大家展示如何拍照截图。</p>
+
+<p>拍照截图有点儿特殊，要知道，现在的Android智能手机的摄像头都是几百万的像素，拍出来的图片都是非常大的。因此，我们不能像对待相册截图一样使用Bitmap小图，无论大图小图都统一使用Uri进行操作。</p>
+
+<h4 id="uri">一、首先准备好需要使用到的Uri：</h4>
+
+<p><code>java
+private static final String IMAGE_FILE_LOCATION = "file:///sdcard/temp.jpg";//temp file
+Uri imageUri = Uri.parse(IMAGE_FILE_LOCATION);//The Uri to store the big bitmap
+</code></p>
+
+<h4 id="mediastoreactionimagecapturecamera">二、使用MediaStore.ACTION_IMAGE_CAPTURE可以轻松调用Camera程序进行拍照：</h4>
+
+<p><code>java
+Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//action is capture
+intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+startActivityForResult(intent, TAKE_BIG_PICTURE);//or TAKE_SMALL_PICTURE
+</code></p>
+
+<h4 id="onactivityresulturiuri">三、接下来就可以在 onActivityResult中拿到返回的数据（Uri），并将Uri传递给截图的程序。</h4>
+
+<p>```java
+switch (requestCode) {
+case TAKE_BIG_PICTURE:
+	Log.d(TAG, “TAKE_BIG_PICTURE: data = “ + data);//it seems to be null
+	//TODO sent to crop
+	cropImageUri(imageUri, 800, 400, CROP_BIG_PICTURE);</p>
+
+<pre><code>break; case TAKE_SMALL_PICTURE:
+Log.i(TAG, "TAKE_SMALL_PICTURE: data = " + data);
+//TODO sent to crop 
+cropImageUri(imageUri, 300, 150, CROP_SMALL_PICTURE);
+
+break; } ```
+</code></pre>
+
+<p>可以看到，无论是拍大图片还是小图片，都是使用的Uri，只是尺寸不同而已。我们将这个操作封装在一个方法里面。</p>
+
+<p><code>java
+private void cropImageUri(Uri uri, int outputX, int outputY, int requestCode){
+	Intent intent = new Intent("com.android.camera.action.CROP");
+	intent.setDataAndType(uri, "image/*");
+	intent.putExtra("crop", "true");
+	intent.putExtra("aspectX", 2);
+	intent.putExtra("aspectY", 1);
+	intent.putExtra("outputX", outputX);
+	intent.putExtra("outputY", outputY);
+	intent.putExtra("scale", true);
+	intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+	intent.putExtra("return-data", false);
+	intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+	intent.putExtra("noFaceDetection", true); // no face detection
+	startActivityForResult(intent, requestCode);
+}
+</code></p>
+
+<h4 id="section">四、最后一步，我们已经将数据传入裁剪图片程序，接下来要做的就是处理返回的数据了：</h4>
+
+<p><code>java
+switch (requestCode) {
+case CROP_BIG_PICTURE://from crop_big_picture
+	Log.d(TAG, "CROP_BIG_PICTURE: data = " + data);//it seems to be null
+	if(imageUri != null){
+		Bitmap bitmap = decodeUriAsBitmap(imageUri);
+		imageView.setImageBitmap(bitmap);
+	}
+	break;
+case CROP_SMALL_PICTURE:
+	if(imageUri != null){
+		Bitmap bitmap = decodeUriAsBitmap(imageUri);
+		imageView.setImageBitmap(bitmap);
+	}else{
+		Log.e(TAG, "CROP_SMALL_PICTURE: data = " + data);
+	}
+	break;
+default:
+	break;
+}
+</code></p>
+
+<h4 id="section-1">效果图：</h4>
+
+<p><img src="images/blog/android/184229_tlMc_245415.gif" alt="截图演示" /></p>
+
+<blockquote>
+  <p>代码托管于GitHub，会不定期更新：<a href="https://github.com/ryanhoo/PhotoCropper">https://github.com/ryanhoo/PhotoCropper</a></p>
+</blockquote>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android大图片裁剪终极解决方案（中：从相册截图）]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/"/>
+    <updated>2014-06-03T22:21:35+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2</id>
+    <content type="html"><![CDATA[<p>在这篇博客中，我将向大家展示如何从相册截图。</p>
+
+<p>上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解Android本身的限制，以及我们应当采取的实现方案。</p>
+
+<p>根据我们的分析与总结，图片的来源有拍照和相册，而可采取的操作有</p>
+
+<ul>
+  <li>使用Bitmap并返回数据</li>
+  <li>使用Uri不返回数据</li>
+</ul>
+
+<p>前面我们了解到，使用Bitmap有可能会导致图片过大，而不能返回实际大小的图片，我将采用大图Uri，小图Bitmap的数据存储方式。</p>
+
+<p>我们将要使用到URI来保存拍照后的图片：</p>
+
+<p><code>java
+static final String IMAGE_FILE_LOCATION = "file:///sdcard/temp.jpg";//temp file
+Uri imageUri = Uri.parse(IMAGE_FILE_LOCATION);//The Uri to store the big bitmap
+</code></p>
+
+<p>不难知道，我们从相册选取图片的<strong>Action</strong>为<code>Intent.ACTION_GET_CONTENT</code>。</p>
+
+<p>根据我们上一篇博客的分析，我准备好了两个实例的Intent。</p>
+
+<h4 id="section">一、从相册截大图：</h4>
+
+<p><code>java
+Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+intent.setType("image/*");
+intent.putExtra("crop", "true");
+intent.putExtra("aspectX", 2);
+intent.putExtra("aspectY", 1);
+intent.putExtra("outputX", 600);
+intent.putExtra("outputY", 300);
+intent.putExtra("scale", true);
+intent.putExtra("return-data", false);
+intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+intent.putExtra("noFaceDetection", true); // no face detection
+startActivityForResult(intent, CHOOSE_BIG_PICTURE);
+</code></p>
+
+<h4 id="section-1">二、从相册截小图</h4>
+
+<p><code>java
+Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+intent.setType("image/*");
+intent.putExtra("crop", "true");
+intent.putExtra("aspectX", 2);
+intent.putExtra("aspectY", 1);
+intent.putExtra("outputX", 200);
+intent.putExtra("outputY", 100);
+intent.putExtra("scale", true);
+intent.putExtra("return-data", true);
+intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+intent.putExtra("noFaceDetection", true); // no face detection
+startActivityForResult(intent, CHOOSE_SMALL_PICTURE);
+</code></p>
+
+<h4 id="onactivityresult">三、对应的onActivityResult可以这样处理返回的数据</h4>
+
+<p><code>java
+switch (requestCode) {
+case CHOOSE_BIG_PICTURE:
+	Log.d(TAG, "CHOOSE_BIG_PICTURE: data = " + data);//it seems to be null
+	if(imageUri != null){
+		Bitmap bitmap = decodeUriAsBitmap(imageUri);//decode bitmap
+		imageView.setImageBitmap(bitmap);
+	}
+break;
+case CHOOSE_SMALL_PICTURE:
+	if(data != null){
+		Bitmap bitmap = data.getParcelableExtra("data");
+		imageView.setImageBitmap(bitmap);
+	}else{
+		Log.e(TAG, "CHOOSE_SMALL_PICTURE: data = " + data);
+	}
+break;
+}
+</code></p>
+
+<h4 id="section-2">效果图</h4>
+
+<p><img src="/images/blog/android/183645_yuLJ_245415.gif" alt="大图" /></p>
+
+<p><img src="/images/blog/android/183707_DnNy_245415.gif" alt="小图" /></p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android大图片裁剪终极解决方案（上：原理分析）]]></title>
