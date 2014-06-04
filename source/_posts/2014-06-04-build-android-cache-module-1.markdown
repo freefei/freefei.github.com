@@ -3,7 +3,7 @@ layout: post
 title: "【构建Android缓存模块】（一）吐槽与原理分析"
 date: 2014-06-04 22:32:52 +0800
 comments: true
-categories: 
+categories: [Android]
 ---
 
 * Contents
