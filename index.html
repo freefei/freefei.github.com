@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="Jun 4th, 2014 Android Comments 【构建Android缓存模块】（一）吐槽与原理分析 摘要 前言 自力更生，构建自己的缓存模块 如何解决OOM 佛说引用，既非引用，是名引用。 原理示意图 参考资料 摘要 在我翻译的 Google 官方系列教程中，Bitmap &hellip;">
+	<meta name="description" content="Jun 5th, 2014 Android Comments 【构建Android缓存模块】（二）Memory Cache & File Cache Memory Cache File Cache 上一篇博客我们讲到普通应用缓存Bitmap的实现分析，根据 MVC 的实现原理， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,312 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-05T23:34:36+08:00" data-updated="true" itemprop="datePublished">Jun 5<span>th</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>Android</a>
+
+
+</div>
+		
+			<span class="comments"><a href="/blog/2014/06/05/build-android-cache-module-2/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/06/05/build-android-cache-module-2/" itemprop="url">【构建Android缓存模块】（二）Memory Cache & File Cache</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<ul id="markdown-toc">
+  <li><a href="#memory-cache">Memory Cache</a></li>
+  <li><a href="#file-cache">File Cache</a></li>
+</ul>
+
+<p>上一篇博客我们讲到普通应用缓存Bitmap的实现分析，根据 MVC 的实现原理，我将这个简单的缓存实现单独写成一个模块，这样可以方便以后的使用，对于任意的需求，都属于一个可插拔式的功能。</p>
+
+<p>之前提到，这个缓存模块主要有两个子部件：</p>
+
+<h2 id="memory-cache">Memory Cache</h2>
+
+<p>内存缓存的存取速度非常惊人，远远快于文件读取，如果没有内存限制，当然首选这种方式。遗憾的是我们有着<strong>16M</strong>的限制（当然大多数设备限制要高于 Android 官方说的这个数字），这也正是大 Bitmap容易引起 OOM 的原因。Memory Cache 将使用 <code>WeakHashMap</code> 作为缓存的中枢，当程序内存告急时，它会主动清理部分弱引用（因此，当引用指向为 null ，我们必须转向硬盘缓存读取数据，如果硬盘也没有，那还是重新下载吧）。</p>
+
+<p>能力越大，责任越大？人家只是跑得快了点儿，总得让人家休息，我们一定不希望让内存成为第一位跑完马拉松的 Pheidippides ，一次以后就挂了吧？作为精打细算的猿媛，我们只能将有限的内存分配给 Memory Cache ，将更繁重的任务托付给任劳任怨的 SDCard 。</p>
+
+<h2 id="file-cache">File Cache</h2>
+
+<p>硬盘读取速度当然不如内存，但是为了珍惜宝贵的流量，不让你的用户在月底没有流量时嚎叫着要删掉你开发的“流量杀手”，最好是避免重复下载。在第一次下载以后，将数据保存在本地即可。</p>
+
+<p>文件读写的技术并不是很新颖的技术，Java Core 那点儿就够你用了。不过要记得我们可是将Bitmap写入文件啊，怎么写入呢？不用着急，Android 的 Bitmap 本身就具备将数据写入 OutputStream 的能力。我将这些额外的方法写在一个帮助类中：BitmapHelper</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">saveBitmap</span><span class="o">(</span><span class="n">File</span> <span class="n">file</span><span class="o">,</span> <span class="n">Bitmap</span> <span class="n">bitmap</span><span class="o">){</span>
+</span><span class="line">	<span class="k">if</span><span class="o">(</span><span class="n">file</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">bitmap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class="line">	<span class="k">try</span> <span class="o">{</span>
+</span><span class="line">		<span class="n">BufferedOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="n">file</span><span class="o">));</span>
+</span><span class="line">		<span class="k">return</span> <span class="n">bitmap</span><span class="o">.</span><span class="na">compress</span><span class="o">(</span><span class="n">CompressFormat</span><span class="o">.</span><span class="na">JPEG</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="n">out</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">FileNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">		<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class="line">		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>最后附上Memory Cache和File Cache的具体代码，非常简单。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MemoryCache</span> <span class="o">{</span>
+</span><span class="line">	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;MemoryCache&quot;</span><span class="o">;</span>
+</span><span class="line">	
+</span><span class="line">	<span class="c1">//WeakReference Map: key=string, value=Bitmap</span>
+</span><span class="line">    <span class="kd">private</span> <span class="n">WeakHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WeakHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">&gt;();</span>
+</span><span class="line">
+</span><span class="line">    <span class="cm">/**</span>
+</span><span class="line"><span class="cm">     * Search the memory cache by a unique key. </span>
+</span><span class="line"><span class="cm">     * @param key Should be unique. </span>
+</span><span class="line"><span class="cm">     * @return The Bitmap object in memory cache corresponding to specific key.</span>
+</span><span class="line"><span class="cm">     * */</span>
+</span><span class="line">    <span class="kd">public</span> <span class="n">Bitmap</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">){</span>
+</span><span class="line">        <span class="k">if</span><span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">        	<span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class="line">        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">    <span class="o">}</span>
+</span><span class="line">
+</span><span class="line">    <span class="cm">/**</span>
+</span><span class="line"><span class="cm">     * Put a bitmap into cache with a unique key.</span>
+</span><span class="line"><span class="cm">     * @param key Should be unique.</span>
+</span><span class="line"><span class="cm">     * @param value A bitmap.</span>
+</span><span class="line"><span class="cm">     * */</span>
+</span><span class="line">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Bitmap</span> <span class="n">value</span><span class="o">){</span>
+</span><span class="line">    	<span class="k">if</span><span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="s">&quot;&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">value</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">    		<span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span><span class="line">    		<span class="c1">//Log.i(TAG, &quot;cache bitmap: &quot; + key);</span>
+</span><span class="line">    		<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;size of memory cache: &quot;</span> <span class="o">+</span> <span class="n">cache</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+</span><span class="line">    	<span class="o">}</span>
+</span><span class="line">    <span class="o">}</span>
+</span><span class="line">
+</span><span class="line">    <span class="cm">/**</span>
+</span><span class="line"><span class="cm">     * clear the memory cache.</span>
+</span><span class="line"><span class="cm">     * */</span>
+</span><span class="line">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
+</span><span class="line">        <span class="n">cache</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class="line">    <span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FileCache</span> <span class="o">{</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;MemoryCache&quot;</span><span class="o">;</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">private</span> <span class="n">File</span> <span class="n">cacheDir</span><span class="o">;</span>	<span class="c1">//the directory to save images</span>
+</span><span class="line">
+</span><span class="line">	<span class="cm">/**</span>
+</span><span class="line"><span class="cm">	 * Constructor</span>
+</span><span class="line"><span class="cm">	 * @param context The context related to this cache.</span>
+</span><span class="line"><span class="cm">	 * */</span>
+</span><span class="line">	<span class="kd">public</span> <span class="nf">FileCache</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">		<span class="c1">// Find the directory to save cached images</span>
+</span><span class="line">		<span class="k">if</span> <span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Environment</span><span class="o">.</span><span class="na">getExternalStorageState</span><span class="o">()</span>
+</span><span class="line">				<span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Environment</span><span class="o">.</span><span class="na">MEDIA_MOUNTED</span><span class="o">))</span>
+</span><span class="line">			<span class="n">cacheDir</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span>
+</span><span class="line">					<span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Environment</span><span class="o">.</span><span class="na">getExternalStorageDirectory</span><span class="o">(),</span>
+</span><span class="line">					<span class="n">Config</span><span class="o">.</span><span class="na">CACHE_DIR</span><span class="o">);</span>
+</span><span class="line">		<span class="k">else</span>
+</span><span class="line">			<span class="n">cacheDir</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getCacheDir</span><span class="o">();</span>
+</span><span class="line">		<span class="k">if</span> <span class="o">(!</span><span class="n">cacheDir</span><span class="o">.</span><span class="na">exists</span><span class="o">())</span>
+</span><span class="line">			<span class="n">cacheDir</span><span class="o">.</span><span class="na">mkdirs</span><span class="o">();</span>
+</span><span class="line">		
+</span><span class="line">		<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;cache dir: &quot;</span> <span class="o">+</span> <span class="n">cacheDir</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="cm">/**</span>
+</span><span class="line"><span class="cm">	 * Search the specific image file with a unique key.</span>
+</span><span class="line"><span class="cm">	 * @param key Should be unique.</span>
+</span><span class="line"><span class="cm">	 * @return Returns the image file corresponding to the key.</span>
+</span><span class="line"><span class="cm">	 * */</span>
+</span><span class="line">	<span class="kd">public</span> <span class="n">File</span> <span class="nf">getFile</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">		<span class="n">File</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">cacheDir</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span><span class="line">		<span class="k">if</span> <span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">exists</span><span class="o">()){</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;the file you wanted exists &quot;</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
+</span><span class="line">			<span class="k">return</span> <span class="n">f</span><span class="o">;</span>
+</span><span class="line">		<span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;the file you wanted does not exists: &quot;</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="cm">/**</span>
+</span><span class="line"><span class="cm">	 * Put a bitmap into cache with a unique key.</span>
+</span><span class="line"><span class="cm">	 * @param key Should be unique.</span>
+</span><span class="line"><span class="cm">	 * @param value A bitmap.</span>
+</span><span class="line"><span class="cm">	 * */</span>
+</span><span class="line">	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Bitmap</span> <span class="n">value</span><span class="o">){</span>
+</span><span class="line">		<span class="n">File</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">cacheDir</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(!</span><span class="n">f</span><span class="o">.</span><span class="na">exists</span><span class="o">())</span>
+</span><span class="line">			<span class="k">try</span> <span class="o">{</span>
+</span><span class="line">				<span class="n">f</span><span class="o">.</span><span class="na">createNewFile</span><span class="o">();</span>
+</span><span class="line">			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class="line">			<span class="o">}</span>
+</span><span class="line">		<span class="c1">//Use the util&#39;s function to save the bitmap.</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">BitmapHelper</span><span class="o">.</span><span class="na">saveBitmap</span><span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="n">value</span><span class="o">))</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;Save file to sdcard successfully!&quot;</span><span class="o">);</span>
+</span><span class="line">		<span class="k">else</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;Save file to sdcard failed!&quot;</span><span class="o">);</span>
+</span><span class="line">		
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="cm">/**</span>
+</span><span class="line"><span class="cm">	 * Clear the cache directory on sdcard.</span>
+</span><span class="line"><span class="cm">	 * */</span>
+</span><span class="line">	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
+</span><span class="line">		<span class="n">File</span><span class="o">[]</span> <span class="n">files</span> <span class="o">=</span> <span class="n">cacheDir</span><span class="o">.</span><span class="na">listFiles</span><span class="o">();</span>
+</span><span class="line">		<span class="k">for</span> <span class="o">(</span><span class="n">File</span> <span class="n">f</span> <span class="o">:</span> <span class="n">files</span><span class="o">)</span>
+</span><span class="line">			<span class="n">f</span><span class="o">.</span><span class="na">delete</span><span class="o">();</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>没什么难的地方，直接贴代码。下节课我讲讲解如何使用异步任务下载数据，以及使用Controller操作Model，控制View的显示。 </p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
