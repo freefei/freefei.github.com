@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-17T16:05:41+08:00</updated>
+  <updated>2014-06-17T16:08:13+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -196,7 +196,7 @@
 
 <p>最后，附上使用方法，以及整个类的代码。</p>
 
-<h2 id="section">使用方法：</h2>
+<h2 id="section">使用</h2>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -204,7 +204,7 @@
 </span><span class="line"><span class="n">imageLoader</span><span class="o">.</span><span class="na">displayBitmap</span><span class="o">(</span><span class="n">imageView</span><span class="o">,</span> <span class="n">fileName</span><span class="o">);</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<h2 id="section-1">代码：</h2>
+<h2 id="asyncimageloader">AsyncImageLoader</h2>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -428,7 +428,7 @@
 </span><span class="line"><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<h2 id="section-2">源码：</h2>
+<h2 id="section-1">源码</h2>
 
 <p>附上源码，不过服务器的源码暂时还没有放出来，先看看客户端的吧。</p>
 

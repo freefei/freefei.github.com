@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-17T16:05:41+08:00</updated>
+  <updated>2014-06-17T16:08:13+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -128,14 +128,14 @@ return bitmap; } ``` 到这里，一个简单的缓存框架就搭建成功了�
 
 <p>最后，附上使用方法，以及整个类的代码。</p>
 
-<h2 id="section">使用方法：</h2>
+<h2 id="section">使用</h2>
 
 <p><code>java
 AsyncImageLoader imageLoader = AsyncImageLoader.getInstance(this);、
 imageLoader.displayBitmap(imageView, fileName);
 </code></p>
 
-<h2 id="section-1">代码：</h2>
+<h2 id="asyncimageloader">AsyncImageLoader</h2>
 
 <p>```java
 public class AsyncImageLoader {</p>
@@ -249,7 +249,7 @@ public void clearCache(){
 } } ```
 </code></pre>
 
-<h2 id="section-2">源码：</h2>
+<h2 id="section-1">源码</h2>
 
 <p>附上源码，不过服务器的源码暂时还没有放出来，先看看客户端的吧。</p>
 
