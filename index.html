@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="Jun 5th, 2014 Android Comments 【构建Android缓存模块】（二）Memory Cache & File Cache Memory Cache File Cache 上一篇博客我们讲到普通应用缓存Bitmap的实现分析，根据 MVC 的实现原理， &hellip;">
+	<meta name="description" content="Jun 17th, 2014 Android Comments 【构建Android缓存模块】（三）Controller & 异步图片加载 使用方法： 代码： 源码： 上一篇博客我们学习了缓存模块的实现， 缓存分做两份：Memory Cache和File Cache。方法也很简单，分别是： &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,464 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-17T15:48:38+08:00" data-updated="true" itemprop="datePublished">Jun 17<span>th</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>Android</a>
+
+
+</div>
+		
+			<span class="comments"><a href="/blog/2014/06/17/build-android-cache-module-3/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/06/17/build-android-cache-module-3/" itemprop="url">【构建Android缓存模块】（三）Controller & 异步图片加载</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<ul id="markdown-toc">
+  <li><a href="#section">使用方法：</a></li>
+  <li><a href="#section-1">代码：</a></li>
+  <li><a href="#section-2">源码：</a></li>
+</ul>
+
+<p>上一篇博客我们学习了缓存模块的实现， 缓存分做两份：<code>Memory Cache</code>和<code>File Cache</code>。方法也很简单，分别是：</p>
+
+<ul>
+  <li>存储文件</li>
+  <li>按唯一key值索引文件</li>
+  <li>清空缓存</li>
+</ul>
+
+<p>区别在于内存缓存读取优先，因为它读写的速度更快。但是考虑到内存限制，退而选用文件存储，分担内存缓存的压力。</p>
+
+<p>原理非常简单，在第一课中已经详细分析了。那么要怎么才能将这个缓存模块与UI模块的显示关联起来呢？在这里我们需要一个控制器，掌管数据流向和读写，同时控制UI的显示。</p>
+
+<p>那么这个控制器需要以下的元素：</p>
+
+<ul>
+  <li>内存缓存</li>
+  <li>硬盘缓存</li>
+  <li>异步任务处理</li>
+  <li>控制UI显示</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="c1">//caches</span>
+</span><span class="line"><span class="kd">private</span> <span class="n">MemoryCache</span> <span class="n">memoryCache</span><span class="o">;</span>
+</span><span class="line"><span class="kd">private</span> <span class="n">FileCache</span> <span class="n">fileCache</span><span class="o">;</span>
+</span><span class="line"><span class="c1">//Asynchronous task</span>
+</span><span class="line"><span class="kd">private</span> <span class="kd">static</span> <span class="n">AsyncImageLoader</span> <span class="n">imageLoader</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><code>Memory Cache</code>和<code>File Cache</code>在上一课中有具体的实现，这里有一个异步的任务处理器—— <code>AsyncImageDownloader</code>，它用来在后台下载数据，完成下载后存储数据到缓存中，并更新UI的显示 。让我们来看看它是如何实现的：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">class</span> <span class="nc">AsyncImageDownloader</span> <span class="kd">extends</span> <span class="n">AsyncTask</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">,</span> <span class="n">Void</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">&gt;{</span>
+</span><span class="line">	<span class="kd">private</span> <span class="n">ImageView</span> <span class="n">imageView</span><span class="o">;</span>
+</span><span class="line">	<span class="kd">private</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">;</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">public</span> <span class="nf">AsyncImageDownloader</span><span class="o">(</span><span class="n">ImageView</span> <span class="n">imageView</span><span class="o">,</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">){</span>
+</span><span class="line">		<span class="k">this</span><span class="o">.</span><span class="na">imageView</span> <span class="o">=</span> <span class="n">imageView</span><span class="o">;</span>
+</span><span class="line">		<span class="k">this</span><span class="o">.</span><span class="na">fileName</span> <span class="o">=</span> <span class="n">fileName</span><span class="o">;</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="nd">@Override</span>
+</span><span class="line">	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPreExecute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class="line">		<span class="kd">super</span><span class="o">.</span><span class="na">onPreExecute</span><span class="o">();</span>
+</span><span class="line">		<span class="n">imageView</span><span class="o">.</span><span class="na">setImageResource</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">placeholder</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="nd">@Override</span>
+</span><span class="line">	<span class="kd">protected</span> <span class="n">Bitmap</span> <span class="nf">doInBackground</span><span class="o">(</span><span class="n">Void</span><span class="o">...</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">		<span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="na">getRealUrlOfPicture</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+</span><span class="line">		<span class="n">HttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpRetriever</span><span class="o">().</span><span class="na">requestGet</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class="line">		<span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;url: &quot;</span> <span class="o">+</span> <span class="n">url</span><span class="o">);</span>
+</span><span class="line">		<span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;respone: &quot;</span> <span class="o">+</span> <span class="n">response</span><span class="o">);</span>
+</span><span class="line">		<span class="n">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">		<span class="k">try</span> <span class="o">{</span>
+</span><span class="line">			<span class="k">if</span><span class="o">(</span><span class="n">response</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">				<span class="n">in</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">().</span><span class="na">getContent</span><span class="o">();</span>
+</span><span class="line">		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalStateException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class="line">			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class="line">			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">		
+</span><span class="line">		<span class="c1">//TODO to be optimized: adjust the size of bitmap</span>
+</span><span class="line">		<span class="k">return</span> <span class="n">BitmapFactory</span><span class="o">.</span><span class="na">decodeStream</span><span class="o">(</span><span class="n">in</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="nd">@Override</span>
+</span><span class="line">	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPostExecute</span><span class="o">(</span><span class="n">Bitmap</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">		<span class="kd">super</span><span class="o">.</span><span class="na">onPostExecute</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">imageView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">			<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span><span class="line">		
+</span><span class="line">		<span class="c1">//TODO cache the bitmap both in sdcard &amp; memory</span>
+</span><span class="line">		<span class="n">memoryCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">fileName</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span><span class="c1">// key is a unique token, value is the bitmap</span>
+</span><span class="line">		
+</span><span class="line">		<span class="n">fileCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">fileName</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>可以看到这个类的构造函数需要两个参数，分别是文件名和对应要显示的<code>ImageView</code>，那么在任务开始的时候，可以为该<code>ImageView</code>设置未下载状态的图片，然后下载完成后更新UI。</p>
+
+<blockquote>
+  <p>注：需要提醒的是，这里的唯一key值，我使用的是文件名，因为我接收到的文件名是唯一的。猿媛们也可以根据自己的需求，设计自己的唯一key值算法。</p>
+</blockquote>
+
+<p>接下来，我们需要读用<code>key</code>值索引相应的<code>Bitmap</code>：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">public</span> <span class="n">Bitmap</span> <span class="nf">getBitmap</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">){</span>
+</span><span class="line">	<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">	<span class="c1">//1. search memory</span>
+</span><span class="line">	<span class="n">bitmap</span> <span class="o">=</span> <span class="n">memoryCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class="line">	
+</span><span class="line">	<span class="c1">//2. search sdcard</span>
+</span><span class="line">	<span class="k">if</span><span class="o">(</span><span class="n">bitmap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">		<span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="n">fileCache</span><span class="o">.</span><span class="na">getFile</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">file</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">			<span class="n">bitmap</span> <span class="o">=</span> <span class="n">BitmapHelper</span><span class="o">.</span><span class="na">decodeFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="k">return</span> <span class="n">bitmap</span><span class="o">;</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>到这里，一个简单的缓存框架就搭建成功了。它简洁有效，但是非常单薄，似乎不够强大，需要你们根据自己的需求进行修改。另外它本来的目的就是用于演示，理解这个以后，我们再来看<code>Google</code>的<code>BitmapFun</code>。</p>
+
+<p>不过，我将它应用在一个小项目中，性能还不错。对于小项目的需求，应该是够的。</p>
+
+<p>最后，附上使用方法，以及整个类的代码。</p>
+
+<h2 id="section">使用方法：</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">AsyncImageLoader</span> <span class="n">imageLoader</span> <span class="o">=</span> <span class="n">AsyncImageLoader</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="k">this</span><span class="o">);</span><span class="err">、</span>
+</span><span class="line"><span class="n">imageLoader</span><span class="o">.</span><span class="na">displayBitmap</span><span class="o">(</span><span class="n">imageView</span><span class="o">,</span> <span class="n">fileName</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-1">代码：</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+<span class="line-number">92</span>
+<span class="line-number">93</span>
+<span class="line-number">94</span>
+<span class="line-number">95</span>
+<span class="line-number">96</span>
+<span class="line-number">97</span>
+<span class="line-number">98</span>
+<span class="line-number">99</span>
+<span class="line-number">100</span>
+<span class="line-number">101</span>
+<span class="line-number">102</span>
+<span class="line-number">103</span>
+<span class="line-number">104</span>
+<span class="line-number">105</span>
+<span class="line-number">106</span>
+<span class="line-number">107</span>
+<span class="line-number">108</span>
+<span class="line-number">109</span>
+<span class="line-number">110</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AsyncImageLoader</span> <span class="o">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;AsyncImageLoader&quot;</span><span class="o">;</span>
+</span><span class="line">	
+</span><span class="line">	<span class="c1">//caches</span>
+</span><span class="line">	<span class="kd">private</span> <span class="n">MemoryCache</span> <span class="n">memoryCache</span><span class="o">;</span>
+</span><span class="line">	<span class="kd">private</span> <span class="n">FileCache</span> <span class="n">fileCache</span><span class="o">;</span>
+</span><span class="line">	<span class="c1">//Asynchronous task</span>
+</span><span class="line">	<span class="kd">private</span> <span class="kd">static</span> <span class="n">AsyncImageLoader</span> <span class="n">imageLoader</span><span class="o">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="kd">class</span> <span class="nc">AsyncImageDownloader</span> <span class="kd">extends</span> <span class="n">AsyncTask</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">,</span> <span class="n">Void</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">&gt;{</span>
+</span><span class="line">		<span class="kd">private</span> <span class="n">ImageView</span> <span class="n">imageView</span><span class="o">;</span>
+</span><span class="line">		<span class="kd">private</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">;</span>
+</span><span class="line">		
+</span><span class="line">		<span class="kd">public</span> <span class="nf">AsyncImageDownloader</span><span class="o">(</span><span class="n">ImageView</span> <span class="n">imageView</span><span class="o">,</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">){</span>
+</span><span class="line">			<span class="k">this</span><span class="o">.</span><span class="na">imageView</span> <span class="o">=</span> <span class="n">imageView</span><span class="o">;</span>
+</span><span class="line">			<span class="k">this</span><span class="o">.</span><span class="na">fileName</span> <span class="o">=</span> <span class="n">fileName</span><span class="o">;</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">		
+</span><span class="line">		<span class="nd">@Override</span>
+</span><span class="line">		<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPreExecute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class="line">			<span class="kd">super</span><span class="o">.</span><span class="na">onPreExecute</span><span class="o">();</span>
+</span><span class="line">			<span class="n">imageView</span><span class="o">.</span><span class="na">setImageResource</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">placeholder</span><span class="o">);</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">		
+</span><span class="line">		<span class="nd">@Override</span>
+</span><span class="line">		<span class="kd">protected</span> <span class="n">Bitmap</span> <span class="nf">doInBackground</span><span class="o">(</span><span class="n">Void</span><span class="o">...</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">			<span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="na">getRealUrlOfPicture</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+</span><span class="line">			<span class="n">HttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpRetriever</span><span class="o">().</span><span class="na">requestGet</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;url: &quot;</span> <span class="o">+</span> <span class="n">url</span><span class="o">);</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;respone: &quot;</span> <span class="o">+</span> <span class="n">response</span><span class="o">);</span>
+</span><span class="line">			<span class="n">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">			<span class="k">try</span> <span class="o">{</span>
+</span><span class="line">				<span class="k">if</span><span class="o">(</span><span class="n">response</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">					<span class="n">in</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">().</span><span class="na">getContent</span><span class="o">();</span>
+</span><span class="line">			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalStateException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class="line">				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class="line">				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">			<span class="o">}</span>
+</span><span class="line">			
+</span><span class="line">			<span class="c1">//TODO to be optimized: adjust the size of bitmap</span>
+</span><span class="line">			<span class="k">return</span> <span class="n">BitmapFactory</span><span class="o">.</span><span class="na">decodeStream</span><span class="o">(</span><span class="n">in</span><span class="o">);</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">		
+</span><span class="line">		<span class="nd">@Override</span>
+</span><span class="line">		<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPostExecute</span><span class="o">(</span><span class="n">Bitmap</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">			<span class="kd">super</span><span class="o">.</span><span class="na">onPostExecute</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span><span class="line">			<span class="k">if</span><span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">imageView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">				<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span><span class="line">			
+</span><span class="line">			<span class="c1">//TODO cache the bitmap both in sdcard &amp; memory</span>
+</span><span class="line">			<span class="n">memoryCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">fileName</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span><span class="c1">// key is a unique token, value is the bitmap</span>
+</span><span class="line">			
+</span><span class="line">			<span class="n">fileCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">fileName</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">private</span> <span class="nf">AsyncImageLoader</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">){</span>
+</span><span class="line">		<span class="k">this</span><span class="o">.</span><span class="na">memoryCache</span> 		<span class="o">=</span> 	<span class="k">new</span> <span class="n">MemoryCache</span><span class="o">();</span>
+</span><span class="line">		<span class="k">this</span><span class="o">.</span><span class="na">fileCache</span>			<span class="o">=</span> 	<span class="k">new</span> <span class="n">FileCache</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">public</span> <span class="kd">static</span> <span class="n">AsyncImageLoader</span> <span class="nf">getInstance</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">){</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">imageLoader</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">			<span class="n">imageLoader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AsyncImageLoader</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class="line">		
+</span><span class="line">		<span class="k">return</span> <span class="n">imageLoader</span><span class="o">;</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">displayBitmap</span><span class="o">(</span><span class="n">ImageView</span> <span class="n">imageView</span><span class="o">,</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">){</span>
+</span><span class="line">		<span class="c1">//no pic for this item</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">fileName</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">fileName</span><span class="o">))</span>
+</span><span class="line">			<span class="k">return</span><span class="o">;</span>
+</span><span class="line">		
+</span><span class="line">		<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">getBitmap</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+</span><span class="line">		<span class="c1">//search in cache, if there is no such bitmap, launch downloads</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">bitmap</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">			<span class="n">imageView</span><span class="o">.</span><span class="na">setImageBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">);</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">		<span class="k">else</span><span class="o">{</span>
+</span><span class="line">			<span class="n">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;Can&#39;t find the file you required.&quot;</span><span class="o">);</span>
+</span><span class="line">			<span class="k">new</span> <span class="nf">AsyncImageDownloader</span><span class="o">(</span><span class="n">imageView</span><span class="o">,</span> <span class="n">fileName</span><span class="o">).</span><span class="na">execute</span><span class="o">();</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">public</span> <span class="n">Bitmap</span> <span class="nf">getBitmap</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">){</span>
+</span><span class="line">		<span class="n">Bitmap</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class="line">		<span class="c1">//1. search memory</span>
+</span><span class="line">		<span class="n">bitmap</span> <span class="o">=</span> <span class="n">memoryCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class="line">		
+</span><span class="line">		<span class="c1">//2. search sdcard</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">bitmap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class="line">			<span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="n">fileCache</span><span class="o">.</span><span class="na">getFile</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class="line">			<span class="k">if</span><span class="o">(</span><span class="n">file</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">				<span class="n">bitmap</span> <span class="o">=</span> <span class="n">BitmapHelper</span><span class="o">.</span><span class="na">decodeFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class="line">		<span class="o">}</span>
+</span><span class="line">		
+</span><span class="line">		<span class="k">return</span> <span class="n">bitmap</span><span class="o">;</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line">	
+</span><span class="line">	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">clearCache</span><span class="o">(){</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">memoryCache</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">			<span class="n">memoryCache</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class="line">		<span class="k">if</span><span class="o">(</span><span class="n">fileCache</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class="line">			<span class="n">fileCache</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class="line">	<span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-2">源码：</h2>
+
+<p>附上源码，不过服务器的源码暂时还没有放出来，先看看客户端的吧。</p>
+
+<p><a href="https://github.com/ryanhoo/SoftRead">https://github.com/ryanhoo/SoftRead</a></p>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -381,7 +839,7 @@
 </span><span class="line"><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>没什么难的地方，直接贴代码。下节课我讲讲解如何使用异步任务下载数据，以及使用Controller操作Model，控制View的显示。 </p>
+<p>没什么难的地方，直接贴代码。下一篇博客我将讲解如何使用异步任务下载数据，以及使用Controller操作Model，控制View的显示。 </p>
 
 		
 		
