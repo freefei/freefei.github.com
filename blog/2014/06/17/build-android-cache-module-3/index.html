@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="【构建Android缓存模块】（三）Controller & 异步图片加载 使用方法： 代码： 源码： 上一篇博客我们学习了缓存模块的实现， 缓存分做两份：Memory Cache和File Cache。方法也很简单，分别是： 存储文件 按唯一key值索引文件 清空缓存 区别在于内存缓存读取优先 &hellip;">
+	<meta name="description" content="【构建Android缓存模块】（三）Controller & 异步图片加载 上一篇博客我们学习了缓存模块的实现， 缓存分做两份：Memory Cache和File Cache。方法也很简单，分别是： 存储文件 按唯一key值索引文件 清空缓存 区别在于内存缓存读取优先，因为它读写的速度更快。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,13 +82,7 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 	<h1 class="title" itemprop="name">【构建Android缓存模块】（三）Controller & 异步图片加载</h1>
-	<div class="entry-content" itemprop="articleBody"><ul id="markdown-toc">
-  <li><a href="#section">使用方法：</a></li>
-  <li><a href="#section-1">代码：</a></li>
-  <li><a href="#section-2">源码：</a></li>
-</ul>
-
-<p>上一篇博客我们学习了缓存模块的实现， 缓存分做两份：<code>Memory Cache</code>和<code>File Cache</code>。方法也很简单，分别是：</p>
+	<div class="entry-content" itemprop="articleBody"><p>上一篇博客我们学习了缓存模块的实现， 缓存分做两份：<code>Memory Cache</code>和<code>File Cache</code>。方法也很简单，分别是：</p>
 
 <ul>
   <li>存储文件</li>

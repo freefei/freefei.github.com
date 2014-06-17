@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-17T16:01:51+08:00</updated>
+  <updated>2014-06-17T16:03:24+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -18,13 +18,7 @@
     <link href="http://ryanhoo.github.io/blog/2014/06/17/build-android-cache-module-3/"/>
     <updated>2014-06-17T15:48:38+08:00</updated>
     <id>http://ryanhoo.github.io/blog/2014/06/17/build-android-cache-module-3</id>
-    <content type="html"><![CDATA[<ul id="markdown-toc">
-  <li><a href="#section">使用方法：</a></li>
-  <li><a href="#section-1">代码：</a></li>
-  <li><a href="#section-2">源码：</a></li>
-</ul>
-
-<p>上一篇博客我们学习了缓存模块的实现， 缓存分做两份：<code>Memory Cache</code>和<code>File Cache</code>。方法也很简单，分别是：</p>
+    <content type="html"><![CDATA[<p>上一篇博客我们学习了缓存模块的实现， 缓存分做两份：<code>Memory Cache</code>和<code>File Cache</code>。方法也很简单，分别是：</p>
 
 <ul>
   <li>存储文件</li>
