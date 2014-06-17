@@ -156,4 +156,4 @@ public class FileCache {
 }
 ```
 
- 没什么难的地方，直接贴代码。下节课我讲讲解如何使用异步任务下载数据，以及使用Controller操作Model，控制View的显示。 
+ 没什么难的地方，直接贴代码。下一篇博客我将讲解如何使用异步任务下载数据，以及使用Controller操作Model，控制View的显示。 
