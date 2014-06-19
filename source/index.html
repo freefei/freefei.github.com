@@ -5,9 +5,13 @@ layout: default
 {% assign index = true %}
 <div itemscope itemtype="http://schema.org/Blog">
 {% for post in paginator.posts %}
-{% assign content = post.content %}
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">{% include article.html %}</article>
+{% assign content = "" %}
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		{% include article.html %}
+		{{post.desc}}
+	</article>
 {% endfor %}
+
 </div>
 <nav id="pagenavi">
     {% if paginator.previous_page %}
