@@ -4,7 +4,7 @@ title: "使用Octopress搭建自己的博客"
 date: 2014-04-28 22:07:27 +0800
 comments: true
 categories: [Octopress]
-desc: "一直想搭建一个自己的博客，开始付诸行动！刚刚接触到Octopress，总体感觉还是不错的，但是它不像segmentfault、oschina之类的平台，什么都具备，很多东西默认没有，需要自己配置，不过在玩的过程中总是能学到新东西的。"
+desc: "一直想搭建一个自己的博客，开始付诸行动！刚刚接触到 Octopress ，总体感觉还是不错的，但是它不像 segmentfault 、 oschina 之类的平台，什么都具备，很多东西默认没有，需要自己配置，不过在玩的过程中总是能学到新东西的。"
 ---
 
 * Contents
