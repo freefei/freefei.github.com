@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-20T22:23:20+08:00</updated>
+  <updated>2014-06-23T22:54:08+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -1017,7 +1017,7 @@
     <id>http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2</id>
     <content type="html"><![CDATA[<p>在这篇博客中，我将向大家展示如何从相册截图。</p>
 
-<p>上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解Android本身的限制，以及我们应当采取的实现方案。</p>
+<p>上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解 Android 本身的限制，以及我们应当采取的实现方案。</p>
 
 <p>根据我们的分析与总结，图片的来源有拍照和相册，而可采取的操作有</p>
 
