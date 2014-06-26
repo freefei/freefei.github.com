@@ -1,0 +1,248 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Timer(Task) ？ Not in Android ！ - Ryan Hoo</title>
+	<meta name="author" content="Ryan Hoo">
+
+	
+	<meta name="description" content="Timer(Task) ？ Not in Android ！ 前言 解决方案 Timer TimerTask 操作定时任务 参考 前言 我们对于 java.util.Timer(Task) 这两个类可谓不陌生，定时任务处处可见它俩如胶似漆的背影。只是，有心人必定会发现在 Android UI &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ryan Hoo" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("ryan.hoo.j@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">Ryan Hoo</a></h1>
+<p class="subtitle">Hi! This is ryan's tech utopia. I am on my way to a full-stack engineer. Currently focusing on making awesome android apps and hybrid technology. Big fan of Cordova, AngularJS, CoffeeScript and much more...</p>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/categories">Categories</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+    <li><a href="/about/">About</a></li>
+</ul></nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="github" href="https://github.com/ryanhoo" title="GitHub">GitHub</a>
+		
+		
+		<a class="email" href="mailto:ryan.hoo.j@gmail.com" title="Email">Email</a>
+		
+		
+		<a class="weibo" href="http://www.weibo.com/sanyufang" title="Weibo">Weibo</a>
+		
+		
+		
+		<a class="google" href="https://plus.google.com/+RyanHooGeek" rel="author" title="Google+">Google+</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Timer(Task) ？ Not in Android ！</h1>
+	<div class="entry-content" itemprop="articleBody"><ul id="markdown-toc">
+  <li><a href="#section">前言</a></li>
+  <li><a href="#section-1">解决方案</a>    <ul>
+      <li><a href="#timer">Timer</a></li>
+      <li><a href="#timertask">TimerTask</a></li>
+      <li><a href="#section-2">操作定时任务</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-3">参考</a></li>
+</ul>
+
+<h2 id="section">前言</h2>
+
+<p>我们对于 <code>java.util.Timer(Task)</code> 这两个类可谓不陌生，定时任务处处可见它俩如胶似漆的背影。只是，有心人必定会发现在 <strong>Android UI</strong> 中使用，它们带来的麻烦远远大于便利。</p>
+
+<p>我在多个场景碰到过这个问题，往往是忍气吞声，不厌其烦的处理着它们的『身后事』，还得提防它们时而罢工的臭毛病。</p>
+
+<h2 id="section-1">解决方案</h2>
+
+<p>其实使用 Android 自己的 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 就可以解决这个问题。而且有如下优点：</p>
+
+<ul>
+  <li>重用</li>
+</ul>
+
+<p>可以很好的重用我们的定时任务，而以往使用 <code>Timer(Task)</code> ，我们不得不销毁，再 <code>new Timer(Task)</code>，不得不说是一种很粗鲁的方式。</p>
+
+<ul>
+  <li>可控性</li>
+</ul>
+
+<p><code>Timer(Task)</code> 的组合更像是离弦之箭，不能收发自如。而使用 <code>Handler</code> 的方式，调用 <code>removeCallbacks</code> 即可轻松暂停或者重置任务。</p>
+
+<h3 id="timer">Timer</h3>
+
+<p>使用 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 来替代 <a href="https://developer.android.com/reference/java/util/Timer.html">Timer</a>。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">Handler</span> <span class="n">timerHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="timertask">TimerTask</h3>
+
+<p>简单可重用的 <code>Runnable</code> ，用来执行定时任务，但是这里是用的比较 <strong>Hack</strong> 的方式来实现循环的 Timer 功能的。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">class</span> <span class="nc">CustomTimerTask</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class="line">    <span class="nd">@Override</span>
+</span><span class="line">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class="line">        <span class="c1">// scheduled tasks</span>
+</span><span class="line">
+</span><span class="line">        <span class="c1">// relaunch the task</span>
+</span><span class="line">        <span class="n">timerHandler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">TIME_INTERVAL</span><span class="o">);</span>
+</span><span class="line">    <span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="section-2">操作定时任务</h3>
+
+<p>我们可以轻松的启动或者停止这个定时任务。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">timerHandler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">new</span> <span class="n">CustomTimerTask</span><span class="o">(),</span> <span class="n">TIME_INTERVAL</span><span class="o">);</span> <span class="c1">// launch the task</span>
+</span><span class="line"><span class="n">timerHandler</span><span class="o">.</span><span class="na">removeCallbacks</span><span class="o">(</span><span class="n">timerTask</span><span class="o">);</span>	<span class="c1">// stop it</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-3">参考</h2>
+
+<p><a href="http://www.mopri.de/2010/timertask-bad-do-it-the-android-way-use-a-handler/">Timer(Task) = bad! Do it the Android way: Use a Handler :)</a></p>
+
+<p><a href="http://docs.huihoo.com/android/2.1/resources/articles/timed-ui-updates.html">Updating the UI from a Timer</a></p>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style addthis_16x16_style">
+	
+	<a class="addthis_button_sinaweibo"></a>
+	
+	
+	<a class="addthis_button_facebook"></a>
+	
+	
+	<a class="addthis_button_twitter"></a>
+	
+	
+	
+	<a class="addthis_button_compact"></a>
+	<a class="addthis_counter addthis_bubble_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Ryan Hoo
+
+<br/>
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'ryanhoo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/';
+        var disqus_url = 'http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42350714-2']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+		</div>
+	</div>
+</body>
+</html>

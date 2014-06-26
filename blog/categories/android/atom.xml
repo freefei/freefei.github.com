@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-23T22:54:08+08:00</updated>
+  <updated>2014-06-26T21:34:15+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Timer(Task) ？ Not in Android ！]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/"/>
+    <updated>2014-06-26T20:55:04+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android</id>
+    <content type="html"><![CDATA[<ul id="markdown-toc">
+  <li><a href="#section">前言</a></li>
+  <li><a href="#section-1">解决方案</a>    <ul>
+      <li><a href="#timer">Timer</a></li>
+      <li><a href="#timertask">TimerTask</a></li>
+      <li><a href="#section-2">操作定时任务</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-3">参考</a></li>
+</ul>
+
+<h2 id="section">前言</h2>
+
+<p>我们对于 <code>java.util.Timer(Task)</code> 这两个类可谓不陌生，定时任务处处可见它俩如胶似漆的背影。只是，有心人必定会发现在 <strong>Android UI</strong> 中使用，它们带来的麻烦远远大于便利。</p>
+
+<p>我在多个场景碰到过这个问题，往往是忍气吞声，不厌其烦的处理着它们的『身后事』，还得提防它们时而罢工的臭毛病。</p>
+
+<h2 id="section-1">解决方案</h2>
+
+<p>其实使用 Android 自己的 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 就可以解决这个问题。而且有如下优点：</p>
+
+<ul>
+  <li>重用</li>
+</ul>
+
+<p>可以很好的重用我们的定时任务，而以往使用 <code>Timer(Task)</code> ，我们不得不销毁，再 <code>new Timer(Task)</code>，不得不说是一种很粗鲁的方式。</p>
+
+<ul>
+  <li>可控性</li>
+</ul>
+
+<p><code>Timer(Task)</code> 的组合更像是离弦之箭，不能收发自如。而使用 <code>Handler</code> 的方式，调用 <code>removeCallbacks</code> 即可轻松暂停或者重置任务。</p>
+
+<h3 id="timer">Timer</h3>
+
+<p>使用 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 来替代 <a href="https://developer.android.com/reference/java/util/Timer.html">Timer</a>。</p>
+
+<p><code>java
+Handler timerHandler = new Handler()
+</code></p>
+
+<h3 id="timertask">TimerTask</h3>
+
+<p>简单可重用的 <code>Runnable</code> ，用来执行定时任务，但是这里是用的比较 <strong>Hack</strong> 的方式来实现循环的 Timer 功能的。</p>
+
+<p>```java
+class CustomTimerTask implements Runnable {
+    @Override
+    public void run() {
+        // scheduled tasks</p>
+
+<pre><code>    // relaunch the task
+    timerHandler.postDelayed(this, TIME_INTERVAL);
+} } ```
+</code></pre>
+
+<h3 id="section-2">操作定时任务</h3>
+
+<p>我们可以轻松的启动或者停止这个定时任务。</p>
+
+<p><code>java
+timerHandler.postDelayed(new CustomTimerTask(), TIME_INTERVAL); // launch the task
+timerHandler.removeCallbacks(timerTask);	// stop it
+</code></p>
+
+<h2 id="section-3">参考</h2>
+
+<p><a href="http://www.mopri.de/2010/timertask-bad-do-it-the-android-way-use-a-handler/">Timer(Task) = bad! Do it the Android way: Use a Handler :)</a></p>
+
+<p><a href="http://docs.huihoo.com/android/2.1/resources/articles/timed-ui-updates.html">Updating the UI from a Timer</a></p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[【构建Android缓存模块】（三）Controller & 异步图片加载]]></title>
@@ -652,101 +731,6 @@ default:
 <blockquote>
   <p>代码托管于GitHub，会不定期更新：<a href="https://github.com/ryanhoo/PhotoCropper">https://github.com/ryanhoo/PhotoCropper</a></p>
 </blockquote>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android大图片裁剪终极解决方案（中：从相册截图）]]></title>
-    <link href="http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/"/>
-    <updated>2014-06-03T22:21:35+08:00</updated>
-    <id>http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2</id>
-    <content type="html"><![CDATA[<p>在这篇博客中，我将向大家展示如何从相册截图。</p>
-
-<p>上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解 Android 本身的限制，以及我们应当采取的实现方案。</p>
-
-<p>根据我们的分析与总结，图片的来源有拍照和相册，而可采取的操作有</p>
-
-<ul>
-  <li>使用Bitmap并返回数据</li>
-  <li>使用Uri不返回数据</li>
-</ul>
-
-<p>前面我们了解到，使用Bitmap有可能会导致图片过大，而不能返回实际大小的图片，我将采用大图Uri，小图Bitmap的数据存储方式。</p>
-
-<p>我们将要使用到URI来保存拍照后的图片：</p>
-
-<p><code>java
-static final String IMAGE_FILE_LOCATION = "file:///sdcard/temp.jpg";//temp file
-Uri imageUri = Uri.parse(IMAGE_FILE_LOCATION);//The Uri to store the big bitmap
-</code></p>
-
-<p>不难知道，我们从相册选取图片的<strong>Action</strong>为<code>Intent.ACTION_GET_CONTENT</code>。</p>
-
-<p>根据我们上一篇博客的分析，我准备好了两个实例的Intent。</p>
-
-<h4 id="section">一、从相册截大图：</h4>
-
-<p><code>java
-Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
-intent.setType("image/*");
-intent.putExtra("crop", "true");
-intent.putExtra("aspectX", 2);
-intent.putExtra("aspectY", 1);
-intent.putExtra("outputX", 600);
-intent.putExtra("outputY", 300);
-intent.putExtra("scale", true);
-intent.putExtra("return-data", false);
-intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-intent.putExtra("noFaceDetection", true); // no face detection
-startActivityForResult(intent, CHOOSE_BIG_PICTURE);
-</code></p>
-
-<h4 id="section-1">二、从相册截小图</h4>
-
-<p><code>java
-Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
-intent.setType("image/*");
-intent.putExtra("crop", "true");
-intent.putExtra("aspectX", 2);
-intent.putExtra("aspectY", 1);
-intent.putExtra("outputX", 200);
-intent.putExtra("outputY", 100);
-intent.putExtra("scale", true);
-intent.putExtra("return-data", true);
-intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-intent.putExtra("noFaceDetection", true); // no face detection
-startActivityForResult(intent, CHOOSE_SMALL_PICTURE);
-</code></p>
-
-<h4 id="onactivityresult">三、对应的onActivityResult可以这样处理返回的数据</h4>
-
-<p><code>java
-switch (requestCode) {
-case CHOOSE_BIG_PICTURE:
-	Log.d(TAG, "CHOOSE_BIG_PICTURE: data = " + data);//it seems to be null
-	if(imageUri != null){
-		Bitmap bitmap = decodeUriAsBitmap(imageUri);//decode bitmap
-		imageView.setImageBitmap(bitmap);
-	}
-break;
-case CHOOSE_SMALL_PICTURE:
-	if(data != null){
-		Bitmap bitmap = data.getParcelableExtra("data");
-		imageView.setImageBitmap(bitmap);
-	}else{
-		Log.e(TAG, "CHOOSE_SMALL_PICTURE: data = " + data);
-	}
-break;
-}
-</code></p>
-
-<h4 id="section-2">效果图</h4>
-
-<p><img src="/images/blog/android/183645_yuLJ_245415.gif" alt="大图" /></p>
-
-<p><img src="/images/blog/android/183707_DnNy_245415.gif" alt="小图" /></p>
 
 ]]></content>
   </entry>

@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-23T22:54:08+08:00</updated>
+  <updated>2014-06-26T21:34:15+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Timer(Task) ？ Not in Android ！]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/"/>
+    <updated>2014-06-26T20:55:04+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android</id>
+    <content type="html"><![CDATA[<ul id="markdown-toc">
+  <li><a href="#section">前言</a></li>
+  <li><a href="#section-1">解决方案</a>    <ul>
+      <li><a href="#timer">Timer</a></li>
+      <li><a href="#timertask">TimerTask</a></li>
+      <li><a href="#section-2">操作定时任务</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-3">参考</a></li>
+</ul>
+
+<h2 id="section">前言</h2>
+
+<p>我们对于 <code>java.util.Timer(Task)</code> 这两个类可谓不陌生，定时任务处处可见它俩如胶似漆的背影。只是，有心人必定会发现在 <strong>Android UI</strong> 中使用，它们带来的麻烦远远大于便利。</p>
+
+<p>我在多个场景碰到过这个问题，往往是忍气吞声，不厌其烦的处理着它们的『身后事』，还得提防它们时而罢工的臭毛病。</p>
+
+<h2 id="section-1">解决方案</h2>
+
+<p>其实使用 Android 自己的 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 就可以解决这个问题。而且有如下优点：</p>
+
+<ul>
+  <li>重用</li>
+</ul>
+
+<p>可以很好的重用我们的定时任务，而以往使用 <code>Timer(Task)</code> ，我们不得不销毁，再 <code>new Timer(Task)</code>，不得不说是一种很粗鲁的方式。</p>
+
+<ul>
+  <li>可控性</li>
+</ul>
+
+<p><code>Timer(Task)</code> 的组合更像是离弦之箭，不能收发自如。而使用 <code>Handler</code> 的方式，调用 <code>removeCallbacks</code> 即可轻松暂停或者重置任务。</p>
+
+<h3 id="timer">Timer</h3>
+
+<p>使用 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 来替代 <a href="https://developer.android.com/reference/java/util/Timer.html">Timer</a>。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">Handler</span> <span class="n">timerHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="timertask">TimerTask</h3>
+
+<p>简单可重用的 <code>Runnable</code> ，用来执行定时任务，但是这里是用的比较 <strong>Hack</strong> 的方式来实现循环的 Timer 功能的。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="kd">class</span> <span class="nc">CustomTimerTask</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class="line">    <span class="nd">@Override</span>
+</span><span class="line">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class="line">        <span class="c1">// scheduled tasks</span>
+</span><span class="line">
+</span><span class="line">        <span class="c1">// relaunch the task</span>
+</span><span class="line">        <span class="n">timerHandler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">TIME_INTERVAL</span><span class="o">);</span>
+</span><span class="line">    <span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="section-2">操作定时任务</h3>
+
+<p>我们可以轻松的启动或者停止这个定时任务。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">timerHandler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">new</span> <span class="n">CustomTimerTask</span><span class="o">(),</span> <span class="n">TIME_INTERVAL</span><span class="o">);</span> <span class="c1">// launch the task</span>
+</span><span class="line"><span class="n">timerHandler</span><span class="o">.</span><span class="na">removeCallbacks</span><span class="o">(</span><span class="n">timerTask</span><span class="o">);</span>	<span class="c1">// stop it</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-3">参考</h2>
+
+<p><a href="http://www.mopri.de/2010/timertask-bad-do-it-the-android-way-use-a-handler/">Timer(Task) = bad! Do it the Android way: Use a Handler :)</a></p>
+
+<p><a href="http://docs.huihoo.com/android/2.1/resources/articles/timed-ui-updates.html">Updating the UI from a Timer</a></p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[【构建Android缓存模块】（三）Controller & 异步图片加载]]></title>
