@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-26T21:37:46+08:00</updated>
+  <updated>2014-06-26T21:39:31+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -64,8 +64,9 @@ Handler timerHandler = new Handler()
 <p>简单可重用的 <code>Runnable</code> ，用来执行定时任务，但是这里是用的比较 <strong>Hack</strong> 的方式来实现循环的 Timer 功能的。</p>
 
 <p>```java
-CustomTimerTask timerTask = new CustomTimerTask();
-class CustomTimerTask implements Runnable {
+CustomTimerTask timerTask = new CustomTimerTask();</p>
+
+<p>class CustomTimerTask implements Runnable {
     @Override
     public void run() {
         // scheduled tasks</p>
