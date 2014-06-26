@@ -42,6 +42,8 @@ Handler timerHandler = new Handler()
 简单可重用的 ``Runnable`` ，用来执行定时任务，但是这里是用的比较 **Hack** 的方式来实现循环的 Timer 功能的。
 
 ```java
+CustomTimerTask timerTask = new CustomTimerTask();
+
 class CustomTimerTask implements Runnable {
     @Override
     public void run() {
@@ -58,7 +60,7 @@ class CustomTimerTask implements Runnable {
 我们可以轻松的启动或者停止这个定时任务。
 
 ```java
-timerHandler.postDelayed(new CustomTimerTask(), TIME_INTERVAL); // launch the task
+timerHandler.postDelayed(timerTask, TIME_INTERVAL); // launch the task
 timerHandler.removeCallbacks(timerTask);	// stop it
 ```
 

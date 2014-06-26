@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【译】Android：更好的自定义字体方法"
+title: "【译】Android：更好的自定义字体方案"
 date: 2014-05-05 17:48:26 +0800
 comments: true
 categories: [Android]
