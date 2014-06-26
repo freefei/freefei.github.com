@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-06-26T21:39:31+08:00</updated>
+  <updated>2014-06-26T21:47:18+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -1323,7 +1323,7 @@ Android devices can have as little as 16MB of memory available to a single appli
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[【译】Android：更好的自定义字体方法]]></title>
+    <title type="html"><![CDATA[【译】Android：更好的自定义字体方案]]></title>
     <link href="http://ryanhoo.github.io/blog/2014/05/05/android-better-way-to-apply-custom-font/"/>
     <updated>2014-05-05T17:48:26+08:00</updated>
     <id>http://ryanhoo.github.io/blog/2014/05/05/android-better-way-to-apply-custom-font</id>
