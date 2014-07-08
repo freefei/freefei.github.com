@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Tech News | Ryan Hoo]]></title>
+  <link href="http://ryanhoo.github.io/blog/categories/tech-news/atom.xml" rel="self"/>
+  <link href="http://ryanhoo.github.io/"/>
+  <updated>2014-07-08T23:52:28+08:00</updated>
+  <id>http://ryanhoo.github.io/</id>
+  <author>
+    <name><![CDATA[Ryan Hoo]]></name>
+    <email><![CDATA[ryan.hoo.j@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Google Is Making Android A Beautiful]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/07/08/google-is-making-android-a-beautiful/"/>
+    <updated>2014-07-08T23:47:37+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/07/08/google-is-making-android-a-beautiful</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>
