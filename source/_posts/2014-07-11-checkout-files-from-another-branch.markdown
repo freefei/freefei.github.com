@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Git 从另外的分支提取指定文件"
+title: "Git 从其它分支提取指定文件"
 date: 2014-07-11 11:38:28 +0800
 comments: true
 categories: [Git]
