@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-07-11T12:07:06+08:00</updated>
+  <updated>2014-07-11T12:13:43+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Git 从另外的分支提取指定文件]]></title>
+    <title type="html"><![CDATA[Git 从其它分支提取指定文件]]></title>
     <link href="http://ryanhoo.github.io/blog/2014/07/11/checkout-files-from-another-branch/"/>
     <updated>2014-07-11T11:38:28+08:00</updated>
     <id>http://ryanhoo.github.io/blog/2014/07/11/checkout-files-from-another-branch</id>
