@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-07-17T18:17:05+08:00</updated>
+  <updated>2014-07-17T18:18:56+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -1239,7 +1239,7 @@
 
 <p>我将原理画成图，以便大家的理解。主体有三个，分别是 UI ，缓存模块和数据源。它们之间的关系如下：</p>
 
-<p><img src="images/blog/android/130726_4p9B_245415.png" alt="原理示意图" /></p>
+<p><img src="http://ryanhoo.github.io/images/blog/android/130726_4p9B_245415.png" alt="原理示意图" /></p>
 
 <p>① UI：请求数据，使用唯一的 Key 值索引 Memory Cache 中的 Bitmap 。</p>
 
@@ -1401,7 +1401,7 @@
 
 <h4 id="section-1">效果图：</h4>
 
-<p><img src="images/blog/android/184229_tlMc_245415.gif" alt="截图演示" /></p>
+<p><img src="http://ryanhoo.github.io/images/blog/android/184229_tlMc_245415.gif" alt="截图演示" /></p>
 
 <blockquote>
   <p>代码托管于GitHub，会不定期更新：<a href="https://github.com/ryanhoo/PhotoCropper">https://github.com/ryanhoo/PhotoCropper</a></p>
