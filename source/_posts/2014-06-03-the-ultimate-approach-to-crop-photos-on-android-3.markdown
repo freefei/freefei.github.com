@@ -99,5 +99,5 @@ default:
 > 代码托管于GitHub，会不定期更新：[https://github.com/ryanhoo/PhotoCropper][2]
 
 
-[1]: images/blog/android/184229_tlMc_245415.gif
+[1]: /images/blog/android/184229_tlMc_245415.gif
 [2]: https://github.com/ryanhoo/PhotoCropper

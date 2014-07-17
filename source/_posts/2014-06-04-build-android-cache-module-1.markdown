@@ -125,6 +125,6 @@ p1 = null;
 
 [1]: http://my.oschina.net/ryanhoo/blog?catalog=260281
 [2]: http://vdisk.weibo.com/s/hNgFB
-[3]: images/blog/android/130726_4p9B_245415.png
+[3]: /images/blog/android/130726_4p9B_245415.png
 [4]: http://vdisk.weibo.com/s/jtqjr
 [5]: http://vdisk.weibo.com/s/jtqik
