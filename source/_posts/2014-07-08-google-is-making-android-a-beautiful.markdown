@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Google Is Making Android A Beautiful"
+title: "Google Is Making Android A Beautiful, Dynamic Scrapbook - A Closer Look At Material Design"
 date: 2014-07-08 23:47:37 +0800
 comments: true
 categories: [Tech News]
