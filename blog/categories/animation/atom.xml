@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Animation | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/animation/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-07-20T22:25:20+08:00</updated>
+  <updated>2014-07-21T22:53:48+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -31,7 +31,10 @@
     </ul>
   </li>
   <li><a href="#section-2">背景渐变</a></li>
-  <li><a href="#section-3">源码</a></li>
+  <li><a href="#section-3">源码</a>    <ul>
+      <li><a href="#github--zhihu-parallax-animation3">Github : <a href="https://github.com/ryanhoo/Zhihu-Parallax-Animation">Zhihu-Parallax-Animation</a></a></li>
+    </ul>
+  </li>
   <li><a href="#section-4">参考</a></li>
 </ul>
 
@@ -41,15 +44,15 @@
 
 <h1 id="section">前言</h1>
 
-<p><code>Parallax Scrolling(视差滚动)</code>，是一种常见的动画效果。视差一词来源于天文学，但在日常生活中也有它的身影。在疾驰的动车上看风景时，会发现越是离得近的，相对运动速度越快，而远处的山川河流只是缓慢的移动着，这就是最常见的视差效果。视差动画独有的层次感能带来极为逼真的视觉体验，<strong>iOS</strong>、<strong>Android Launcher</strong>、<strong>Website</strong>都将视差动画作为提升用户视觉愉悦度的不二选择。</p>
+<p><code>Parallax Scrolling (视差滚动)</code>，是一种常见的动画效果。视差一词来源于天文学，但在日常生活中也有它的身影。在疾驰的动车上看风景时，会发现越是离得近的，相对运动速度越快，而远处的山川河流只是缓慢的移动着，这就是最常见的视差效果。视差动画独有的层次感能带来极为逼真的视觉体验，<strong>iOS</strong>、<strong>Android Launcher</strong>、<strong>Website</strong> 都将视差动画作为提升用户视觉愉悦度的不二选择。</p>
 
-<p>客户端应用第一次打开出现引导页也不是什么新鲜的事儿，<code>ViewPager</code>配上几张设计师精心绘制的图片，分分钟即可了事。但是总有人把平凡的事情做到不平凡，如本文的知乎客户端，亦或是新浪微博贺岁版，百度贴吧某版等众多应用里都出现了视差动画的身影，随着用户手指的滑动，反馈以灵动、贴近真实的视觉以及操作体验，对应用的初始印象登时被提升到一个极高的点。</p>
+<p>客户端应用第一次打开出现引导页也不是什么新鲜的事儿，<code>ViewPager</code> 配上几张设计师精心绘制的图片，分分钟即可了事。但是总有人把平凡的事情做到不平凡，如本文的知乎客户端，亦或是新浪微博贺岁版，百度贴吧某版等众多应用里都出现了视差动画的身影，随着用户手指的滑动，反馈以灵动、贴近真实的视觉以及操作体验，对应用的初始印象登时被提升到一个极高的点。</p>
 
 <p>给我印象最深的是去年新浪微博的贺岁版，引导页是一系列的年画，里面有红色剪纸的小孩儿，滑动界面的时候感觉这些元素在『动』，是真正的灵动，能勾起人童年的回忆，年味儿十足。不过话说我年怎么过跟新浪微博一毛钱关系都没有，但是这个启动页却是深得我意。只是这个版本的微博找不到了，正好前两天看到知乎的启动页做的也不错，就正好拿来练练手吧。</p>
 
-<p>本文就知乎Android客户端启动页面为例，教你如何实现视差滚动效果。</p>
+<p>本文就知乎 Android 客户端启动页面为例，教你如何实现视差滚动效果。</p>
 
-<p><img src="/images/blog/android/zhihu-parallax-animation.gif" alt="知乎Android客户端启动页" /></p>
+<p><img src="/images/blog/android/zhihu-parallax-animation.gif" alt="知乎 Android 客户端启动页" /></p>
 
 <h1 id="section-1">界面分析</h1>
 
@@ -66,19 +69,19 @@
 
 <h1 id="parallax-scrolling">Parallax Scrolling</h1>
 
-<p>这里的视差滚动效果，主要表现为内容元素滚动速率的差异上。比如在<code>ViewPager</code>中滑动了<code>1px</code>，而<strong>A</strong>元素移动<code>2px</code>，<strong>B</strong>元素移动<code>1.5px</code>，这种移动差距的比率，我称之为<code>parallaxCofficient</code>，即<strong>视差系数</strong>或者<strong>视差速率</strong>，正是同一个界面中的元素，由于层级不同，赋予的视差系数不同，在移动速度上的差异形成了视差的错觉，这就是我们要追求的效果。</p>
+<p>这里的视差滚动效果，主要表现为内容元素滚动速率的差异上。比如在 <code>ViewPager</code> 中滑动了 <code>1px</code> ，而 <strong>A</strong> 元素移动 <code>2px</code> ， <strong>B</strong> 元素移动 <code>1.5px</code> ，这种移动差距的比率，我称之为 <code>parallaxCofficient</code> ，即 <strong>视差系数</strong> 或者 <strong>视差速率</strong> ，正是同一个界面中的元素，由于层级不同，赋予的视差系数不同，在移动速度上的差异形成了视差的错觉，这就是我们要追求的效果。</p>
 
-<p>那知道原理就好办了，使用<code>ViewPager.OnPageChangeListener</code>，动态计算不就得了。no no no! 后面完成背景渐变效果确实需要计算这个，但是<code>ViewPager</code>已经为我们准备好了变形元素<strong>transformium</strong>: <code>ViewPager.PageTransformer</code>，它有一个抽象方法<code>transformPage(View page, float position)</code>，正是为我们完成视差动画量身定制的。</p>
+<p>那知道原理就好办了，使用 <code>ViewPager.OnPageChangeListener</code> ，动态计算不就得了。 no no no ! 后面完成背景渐变效果确实需要计算这个，但是 <code>ViewPager</code> 已经为我们准备好了变形元素 <strong>transformium</strong> : <code>ViewPager.PageTransformer</code> ，它有一个抽象方法 <code>transformPage(View page, float position)</code> ，正是为我们完成视差动画量身定制的。</p>
 
 <h2 id="viewpagerpagetransformer">ViewPager.PageTransformer</h2>
 
-<p><a href="https://developer.android.com/reference/android/support/v4/view/ViewPager.PageTransformer.html">PageTransformer</a>在<code>ViewPager</code>滑动时被触发，它为我们自定义页面中进行视图变换打开了一扇大门。</p>
+<p><a href="https://developer.android.com/reference/android/support/v4/view/ViewPager.PageTransformer.html">PageTransformer</a> 在 <code>ViewPager</code> 滑动时被触发，它为我们自定义页面中进行视图变换打开了一扇大门。</p>
 
 <p><code>java
 public abstract void transformPage (View page, float position)
 </code></p>
 
-<p>在<code>ViewPager</code>源码中，我们可以很直观的看到它的调用过程：</p>
+<p>在 <code>ViewPager</code> 源码中，我们可以很直观的看到它的调用过程：</p>
 
 <p>```java
 // ViewPager#onPageScrolled
@@ -98,13 +101,13 @@ if (mPageTransformer != null) {
 
 <h4 id="param-1-view-page">Param 1: View page</h4>
 
-<p>从上面的代码中，不难看出，<code>page</code>就是当前被滑动的页面，调试得知，每一个<strong>child view</strong>被<code>NoSaveStateFrameLayout</code>包装，也就是说<code>page.getChildAt(0)</code>即是每个<code>page</code>实际的<strong>child view</strong>。</p>
+<p>从上面的代码中，不难看出，<code>page</code> 就是当前被滑动的页面，调试得知，每一个 <strong>child view</strong> 被 <code>NoSaveStateFrameLayout</code> 包装，也就是说 <code>page.getChildAt(0)</code> 即是每个 <code>page</code> 实际的 <strong>child view</strong> 。</p>
 
 <h4 id="param-2-float-position">Param 2: float position</h4>
 
-<p><code>position</code>这个参数不看代码或者文档，总会误以为就是我们熟知的<code>integer position</code>，不过它实际上是滑动页面的一个相对比例，本质跟 1、2、3、4 这种<code>position</code>是一样的。</p>
+<p><code>position</code> 这个参数不看代码或者文档，总会误以为就是我们熟知的 <code>integer position</code> ，不过它实际上是滑动页面的一个相对比例，本质跟 1、2、3、4 这种 <code>position</code> 是一样的。</p>
 
-<p>比如知乎启动页共有<strong>6</strong>个页面，分别是<strong>A</strong>，<strong>B</strong>，<strong>C</strong>，<strong>D</strong>，<strong>E</strong>，<strong>F</strong>初始状态也就是<strong>A</strong>页面静止时，<strong>A</strong>页面的<code>position</code>正好是<strong>0</strong>，<strong>B</strong>页面是<strong>1</strong>。而后滑动页面（B -&gt; A），在这个过程中<strong>A</strong>的<code>position</code>是间于<code>[-1, 0]</code>，<strong>B</strong>页面则是间于<code>[0, 1]</code>。</p>
+<p>比如知乎启动页共有 <strong>6</strong> 个页面，分别是 <strong>A</strong>、<strong>B</strong>、<strong>C</strong>、<strong>D</strong>、<strong>E</strong>、<strong>F</strong> 初始状态也就是 <strong>A</strong> 页面静止时，<strong>A</strong> 页面的 <code>position</code> 正好是 <strong>0</strong> ，<strong>B</strong> 页面是 <strong>1</strong> 。而后滑动页面（B -&gt; A），在这个过程中 <strong>A</strong> 的 <code>position</code> 是间于 <code>[-1, 0]</code> ，<strong>B</strong> 页面则是间于 <code>[0, 1]</code> 。</p>
 
 <p>不过这个参数的文档却是简单不够直观，对照上面的例子，现在应该很清晰了。</p>
 
@@ -114,7 +117,7 @@ if (mPageTransformer != null) {
 
 <h2 id="parallaxtransformer">ParallaxTransformer</h2>
 
-<p>根据上面的分析，我们可以得出一个相对简单的自定义<strong>transformer</strong>，对<code>page view</code>进行遍历，递增或者递减其<code>parallaxCofficient</code>，以得到我们预期的效果，具体的系数设置请参考代码。</p>
+<p>根据上面的分析，我们可以得出一个相对简单的自定义 <strong>transformer</strong> ，对 <code>page view</code> 进行遍历，递增或者递减其 <code>parallaxCofficient</code> ，以得到我们预期的效果，具体的系数设置请参考代码。</p>
 
 <p>```java
 class ParallaxTransformer implements ViewPager.PageTransformer {</p>
@@ -147,9 +150,9 @@ public void transformPage(View page, float position) {
 
 <p>留心才会发现，从第一页滑动到最后一页，背景色会平滑的从深蓝色过度到浅蓝色，这种效果又该怎么实现呢？</p>
 
-<p>用过<code>Property Animation</code>的同学应该知道，以前的<code>Animation</code>只能用在<strong>View</strong>上，而<code>Property Animation</code>却可以用在任意类型属性值上，这归功于<code>TypeEvaluator</code>。</p>
+<p>用过 <code>Property Animation</code> 的同学应该知道，以前的 <code>Animation</code> 只能用在 <strong>View</strong> 上，而 <code>Property Animation</code> 却可以用在任意类型属性值上，这归功于 <code>TypeEvaluator</code> 。</p>
 
-<p>正好我们有<code>ArgbEvaluator</code>，它可以估算两个颜色值之间，任意部分的色值。因此，只需要指定起始色值以及最终的色值，传入滑动所对应的<code>fraction</code>即当前位置相对总距离的比例值，即可获得相应的色值。</p>
+<p>正好我们有 <code>ArgbEvaluator</code> ，它可以估算两个颜色值之间，任意部分的色值。因此，只需要指定起始色值以及最终的色值，传入滑动所对应的 <code>fraction</code> 即当前位置相对总距离的比例值，即可获得相应的色值。</p>
 
 <p>```java
 public class ArgbEvaluator implements TypeEvaluator {</p>
@@ -159,7 +162,7 @@ public class ArgbEvaluator implements TypeEvaluator {</p>
 } } ```
 </code></pre>
 
-<p>当然，前面说到需要使用<code>ViewPager.OnPageChangeListener</code>的：</p>
+<p>当然，前面说到需要使用 <code>ViewPager.OnPageChangeListener</code> 的：</p>
 
 <p>```java
 class GuidePageChangeListener implements ViewPager.OnPageChangeListener {</p>
@@ -196,11 +199,11 @@ public void onPageScrollStateChanged(int state) {} } ```
 
 <h1 id="section-3">源码</h1>
 
-<p>代码已经<strong>push</strong>到<strong>Github</strong>了，诸位自取。不过请注意，其素材均取自于知乎Android客户端（你懂的），学习交流即可，请勿用作商业用途。</p>
+<p>代码已经 <strong>push</strong> 到 <strong>Github</strong> 了，诸位自取。不过请注意，其素材均取自于知乎 Android 客户端（你懂的），学习交流即可，请勿用作商业用途。</p>
 
-<p>还求更优雅的实现方式，欢迎发起<code>pull request</code>。</p>
+<p>还求更优雅的实现方式，欢迎发起 <code>pull request</code> 。</p>
 
-<p><a href="https://github.com/ryanhoo/Zhihu-Parallax-Animation">Zhihu-Parallax-Animation</a></p>
+<h2 id="github--zhihu-parallax-animation3">Github : <a href="https://github.com/ryanhoo/Zhihu-Parallax-Animation">Zhihu-Parallax-Animation</a></h2>
 
 <h1 id="section-4">参考</h1>
 
