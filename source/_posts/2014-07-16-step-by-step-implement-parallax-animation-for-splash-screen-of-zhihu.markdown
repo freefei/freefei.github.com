@@ -10,7 +10,9 @@ desc: "Parallax Scrolling (视差滚动)，是一种常见的动画效果。视�
 * Contents
 {:toc}
 
-> 欢迎转载，但请务必注明出处！[http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu/][6]
+> 欢迎转载，但请务必注明出处！
+> 
+>[http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu/][6]
 
 # 前言
 
