@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Categories - Ryan Hoo</title>
+	<title>安装 Xcode 后命令行提示错误 - Ryan Hoo</title>
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content=" Octopress [ 1 ] Android [ 9 ] Tech news [ 1 ] Git [ 1 ] Animation [ 1 ] Xcode [ 1 ] ">
+	<meta name="description" content="安装 Xcode 后命令行提示错误 在安装完新版本的 Xcode 后，在 iTerm 中执行命令总会有这样的提示： Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -17,7 +17,7 @@
 
 	<link href="/atom.xml" rel="alternate" title="Ryan Hoo" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://ryanhoo.github.io/blog/categories/">
+	<link rel="canonical" href="http://ryanhoo.github.io/blog/2014/08/12/agreeing-to-the-xcode-license-from-the-command-line/">
 	<link href="/favicon.png" rel="shortcut icon">
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -80,27 +80,41 @@
 				
 			
 			<div class="mid-col-container">
-				<div id="content" class="inner"><article class="page">
-    
-    <h1 class="title">Categories</h1>
-    
-    <div class="entry-content"><ul>
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">安装 Xcode 后命令行提示错误</h1>
+	<div class="entry-content" itemprop="articleBody"><p>在安装完新版本的 Xcode 后，在 iTerm 中执行命令总会有这样的提示：</p>
 
-    <li><a href="/blog/categories/octopress/">Octopress</a> [ 1 ]</li>
+<blockquote>
+  <p>Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via sudo.</p>
+</blockquote>
 
-    <li><a href="/blog/categories/android/">Android</a> [ 9 ]</li>
+<p>这个时候执行 <code>sudo xcrun cc</code> 就可以显示 apple license ，输入 <strong>agree</strong> 即可。</p>
 
-    <li><a href="/blog/categories/tech news/">Tech news</a> [ 1 ]</li>
+<p>参考: <a href="http://blog.tomhennigan.co.uk/post/62238548037/agreeing-to-the-xcode-license-from-the-command-line">Agreeing to the Xcode license from the command line</a></p>
 
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/animation/">Animation</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/xcode/">Xcode</a> [ 1 ]</li>
-
-</ul>
 </div>
+
 </article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style addthis_16x16_style">
+	
+	<a class="addthis_button_sinaweibo"></a>
+	
+	
+	<a class="addthis_button_facebook"></a>
+	
+	
+	<a class="addthis_button_twitter"></a>
+	
+	
+	
+	<a class="addthis_button_compact"></a>
+	<a class="addthis_counter addthis_bubble_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid="></script>
+</div>
+
 
 
 <section id="comment">
@@ -108,7 +122,6 @@
     <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
 </section>
-
 </div>
 			</div>
 			<footer id="footer" class="inner">Copyright &copy; 2014
@@ -131,8 +144,8 @@ Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Sha
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://ryanhoo.github.io/blog/categories/index.html';
-        var disqus_url = 'http://ryanhoo.github.io/blog/categories/index.html';
+        var disqus_identifier = 'http://ryanhoo.github.io/blog/2014/08/12/agreeing-to-the-xcode-license-from-the-command-line/';
+        var disqus_url = 'http://ryanhoo.github.io/blog/2014/08/12/agreeing-to-the-xcode-license-from-the-command-line/';
         var disqus_script = 'embed.js';
       
     (function () {
