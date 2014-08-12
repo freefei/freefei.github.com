@@ -4,6 +4,8 @@ title: "安装 Xcode 后命令行提示错误"
 date: 2014-08-12 21:37:31 +0800
 comments: true
 categories: [Xcode]
+desc: "在安装完新版本的 Xcode 后，在 iTerm 中执行命令总会有这样的提示：Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via sudo.
+"
 ---
 
 在安装完新版本的 Xcode 后，在 iTerm 中执行命令总会有这样的提示：
