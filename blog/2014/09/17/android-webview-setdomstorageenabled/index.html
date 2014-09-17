@@ -1,0 +1,329 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>[疑难杂症] Android WebView 无法打开天猫页面 - Ryan Hoo</title>
+	<meta name="author" content="Ryan Hoo">
+
+	
+	<meta name="description" content="[疑难杂症] Android WebView 无法打开天猫页面 定位问题 Chrome Inspcet Device Android Logcat 分析问题 追根溯源 代码分析 localStorage 解决问题 参考 Android WebView 突然无法打开天猫的详情页，一直停留在加载状态 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ryan Hoo" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("ryan.hoo.j@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">Ryan Hoo</a></h1>
+<p class="subtitle">Hi! This is ryan's tech utopia. I am on my way to a full-stack engineer. Currently focusing on making awesome android apps and hybrid technology. Big fan of Cordova, AngularJS, CoffeeScript and much more...</p>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/categories">Categories</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+    <li><a href="/about/">About</a></li>
+</ul></nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="github" href="https://github.com/ryanhoo" title="GitHub">GitHub</a>
+		
+		
+		<a class="email" href="mailto:ryan.hoo.j@gmail.com" title="Email">Email</a>
+		
+		
+		<a class="weibo" href="http://www.weibo.com/sanyufang" title="Weibo">Weibo</a>
+		
+		
+		
+		<a class="google" href="https://plus.google.com/+RyanHooGeek" rel="author" title="Google+">Google+</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">[疑难杂症] Android WebView 无法打开天猫页面</h1>
+	<div class="entry-content" itemprop="articleBody"><ul id="markdown-toc">
+  <li><a href="#section">定位问题</a>    <ul>
+      <li><a href="#chrome-inspcet-device">Chrome Inspcet Device</a></li>
+      <li><a href="#android-logcat">Android Logcat</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-1">分析问题</a>    <ul>
+      <li><a href="#section-2">追根溯源</a></li>
+      <li><a href="#section-3">代码分析</a>        <ul>
+          <li><a href="#localstorage">localStorage</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#section-4">解决问题</a></li>
+  <li><a href="#section-5">参考</a></li>
+</ul>
+
+<p>Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的，通过搜索，找到解决方法，简单设置一行代码 
+<code>webView.getSettings().setDomStorageEnabled(true)</code> 即可解决问题，但背后的原因又是什么呢？</p>
+
+<p><img src="/images/blog/android/34cb73b6bb0dfbac04b1f50d6a58c05a.png" alt="Android WebView Can't Load TMall Pages" /></p>
+
+<p>我们不能只是做解决问题的程序员，还要做好奇的程序员，跟我来一探究竟吧。</p>
+
+<h1 id="section">定位问题</h1>
+
+<p>本着<strong>发现问题 -&gt; 分析问题 -&gt; 解决问题</strong>的步骤，接下来我们要定位问题的来源。</p>
+
+<h2 id="chrome-inspcet-device">Chrome Inspcet Device</h2>
+
+<p>我首先想到的是，Android 4.4 以后的 WebView 是基于 chromium 内核的，这带来了一个福利是，我们可以在 chrome 中 inspect device，像普通网页一样，进行 debug，精准、快速定位问题来源。正好我手头有 Nexus 5 刷的是 <strong>Android L Preview</strong> 还有 Mi3 是最新的 <strong>MIUI V6</strong>，打开 Chrome，<code>Tools</code> -&gt; <code>Inspect Devices</code>，就可以看到原生应用里的 WebView 页面了。</p>
+
+<p><img src="/images/blog/android/d5681ec2448ebb4bfd6e22eb805d7ad6.png" alt="Chrome Inspect Devices" /></p>
+
+<p>点击 <code>inspect</code> 即可进入 <strong>Developer Tools</strong>，一切尽在掌控，可以清楚看到 console 输出的错误信息。</p>
+
+<p><img src="/images/blog/android/45c5b879756949cb1e70523f5aad0276.png" alt="Chrome Developer Tools" /></p>
+
+<h2 id="android-logcat">Android Logcat</h2>
+
+<p>实际上，网页加载中 js 输出的错误信息也完整的打印在了 Logcat 中。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="mi">09</span><span class="o">-</span><span class="mi">17</span> <span class="mi">11</span><span class="o">:</span><span class="mi">28</span><span class="o">:</span><span class="mf">20.265</span>  <span class="mi">25993</span><span class="o">-</span><span class="mi">25993</span><span class="o">/</span> <span class="n">I</span><span class="o">/</span><span class="n">chromium</span><span class="err">﹕</span> <span class="o">[</span><span class="nl">INFO:</span><span class="n">CONSOLE</span><span class="o">(</span><span class="mi">2</span><span class="o">)]</span> <span class="s">&quot;TypeError: Cannot read property &#39;hotelLon&#39; of null</span>
+</span><span class="line"><span class="s">  at BaseDerived.g.extend.loadItemData (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??pages/tuan/detail.js:2:8436)</span>
+</span><span class="line"><span class="s">  at BaseDerived.g.extend.initializer (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??pages/tuan/detail.js:2:340)</span>
+</span><span class="line"><span class="s">  at BaseDerived.initializer (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:24184)</span>
+</span><span class="line"><span class="s">  at BaseDerived.Base (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:24486)</span>
+</span><span class="line"><span class="s">  at BaseDerived.S.extend.callSuper (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:26305)</span>
+</span><span class="line"><span class="s">  at BaseDerived (eval at extend (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:27954), &lt;anonymous&gt;:1:51)</span>
+</span><span class="line"><span class="s">  at BaseDerived.S.extend.callSuper (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:26305)</span>
+</span><span class="line"><span class="s">  at new BaseDerived (eval at extend (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:27954), &lt;anonymous&gt;:1:51)</span>
+</span><span class="line"><span class="s">  at Object.&lt;anonymous&gt; (http://h5.m.taobao.com/trip/hotel/tuan/detail.html?itemId=40987076007:426:22)</span>
+</span><span class="line"><span class="s">  at o (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:4799)&quot;</span><span class="o">,</span> <span class="nl">source:</span> <span class="nl">http:</span><span class="c1">//g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918 (2)</span>
+</span><span class="line"><span class="mi">09</span><span class="o">-</span><span class="mi">17</span> <span class="mi">11</span><span class="o">:</span><span class="mi">28</span><span class="o">:</span><span class="mf">20.265</span>  <span class="mi">25993</span><span class="o">-</span><span class="mi">25993</span><span class="o">/</span> <span class="n">I</span><span class="o">/</span><span class="n">chromium</span><span class="err">﹕</span> <span class="o">[</span><span class="nl">INFO:</span><span class="n">CONSOLE</span><span class="o">(</span><span class="mi">2</span><span class="o">)]</span> <span class="s">&quot;Uncaught TypeError: Cannot read property &#39;hotelLon&#39; of null&quot;</span><span class="o">,</span> <span class="nl">source:</span> <span class="nl">http:</span><span class="c1">//g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918 (2)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h1 id="section-1">分析问题</h1>
+
+<h2 id="section-2">追根溯源</h2>
+
+<p>以上两种方式找到的错误信息（相同的）列出了错误栈信息，第一条错误是发生在 <code>http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??pages/tuan/detail.js</code> 的第 2 行第 8436 列。在浏览器中打开这个 js 文件，显而易见它是被压缩过的，复制在 IDE 如 Sublime Text 中格式化，根据错误信息 <code>"TypeError: Cannot read property 'hotelLon' of null</code> 搜索 <strong>hotelLon</strong>，可以找到相关代码。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="nx">loadItemData</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">	<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+</span><span class="line">		<span class="nx">c</span> <span class="o">=</span> <span class="o">!</span><span class="mi">1</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">a</span><span class="p">.</span><span class="nx">loading</span><span class="p">.</span><span class="nx">show</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">curLongitude</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">getRequestParam</span><span class="p">(</span><span class="s2">&quot;longitude&quot;</span><span class="p">)</span>
+</span><span class="line">		<span class="o">||</span> <span class="nx">a</span><span class="p">.</span><span class="nx">getRequestParam</span><span class="p">(</span><span class="s2">&quot;lng&quot;</span><span class="p">)</span>
+</span><span class="line">		<span class="o">||</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">hotelLon</span>
+</span><span class="line">		<span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">curLatitude</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">getRequestParam</span><span class="p">(</span><span class="s2">&quot;latitude&quot;</span><span class="p">)</span>
+</span><span class="line">		<span class="o">||</span> <span class="nx">a</span><span class="p">.</span><span class="nx">getRequestParam</span><span class="p">(</span><span class="s2">&quot;lat&quot;</span><span class="p">)</span>
+</span><span class="line">		<span class="o">||</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">hotelLat</span>
+</span><span class="line">		<span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">fetchItemData</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">		<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">loading</span><span class="p">.</span><span class="nx">hide</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span> <span class="o">=</span> <span class="nx">c</span> <span class="o">?</span> <span class="nx">MockData</span><span class="p">.</span><span class="nx">data</span> <span class="o">:</span> <span class="nx">d</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">isEmptyObject</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">c</span> <span class="o">?</span> <span class="nx">d</span><span class="p">.</span><span class="nx">ret</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span><span class="p">.</span><span class="nx">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">?</span> <span class="k">void</span> <span class="nx">a</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="s2">&quot;.J_detail&quot;</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;##&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nx">o</span><span class="p">)</span> <span class="o">:</span> <span class="k">void</span> <span class="nx">a</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="s2">&quot;.J_detail&quot;</span><span class="p">,</span> <span class="s2">&quot;\u4eb2\uff0c\u8be5\u9152\u5e97\u6682\u65e0\u56e2\u8d2d\u4fe1\u606f\u3002&quot;</span> <span class="o">+</span> <span class="nx">o</span><span class="p">)</span> <span class="o">:</span> <span class="s2">&quot;1&quot;</span> <span class="o">==</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">.</span><span class="nx">isPreItem</span> <span class="o">?</span> <span class="k">void</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">b</span><span class="p">(</span><span class="s2">&quot;http://h5.m.taobao.com/awp/core/detail.htm?id=${itemId}&amp;ttid=${ttid}&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class="line">			<span class="nx">itemId</span><span class="o">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">getRequestParam</span><span class="p">(</span><span class="s2">&quot;itemid&quot;</span><span class="p">),</span>
+</span><span class="line">			<span class="nx">ttid</span><span class="o">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ttid</span>
+</span><span class="line">		<span class="p">}))</span> <span class="o">:</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dirtyDataProcess</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.J_detail&quot;</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">renderTitle</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">countdownInit</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">submitButtonStatusInit</span><span class="p">(),</span> <span class="nx">n</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{}),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">sliderInit</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">.</span><span class="nx">propertiesMap</span> <span class="o">&amp;&amp;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">skuModule</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.J_sku&quot;</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">priceModule</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.J_discount&quot;</span><span class="p">)),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">loadRateInfo</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">.</span><span class="nx">hotelList</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">hid</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">.</span><span class="nx">hotelList</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">shid</span><span class="p">),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindSliderClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindServiceClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindRateClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindSubHallClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindDescClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindMapClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindSkuModuleEvent</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindRecommendItemClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindFavoriteClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindShareClick</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">bindSubmitEvent</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">isTripClient</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.J_discount&quot;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;sticky&quot;</span><span class="p">),</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.J_favorite&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">(),</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.fav-line&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()),</span> <span class="nx">i</span><span class="p">.</span><span class="nx">locStorage</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;hotel-tuan-detailHotelList&quot;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span><span class="line">			<span class="nx">hotelList</span><span class="o">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">detailData</span><span class="p">.</span><span class="nx">hotelList</span>
+</span><span class="line">		<span class="p">})),</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.call-seller&quot;</span><span class="p">).</span><span class="nx">parent</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;touchstart&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">			<span class="nx">a</span><span class="p">.</span><span class="nx">sendPoint</span><span class="p">(</span><span class="s2">&quot;Button&quot;</span><span class="p">,</span> <span class="s2">&quot;TuanHotel&quot;</span><span class="p">,</span> <span class="s2">&quot;Call&quot;</span><span class="p">)</span>
+</span><span class="line">		<span class="p">}),</span> <span class="k">void</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.wangxin-waptowx&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;touchstart&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">			<span class="nx">a</span><span class="p">.</span><span class="nx">sendPoint</span><span class="p">(</span><span class="s2">&quot;Button&quot;</span><span class="p">,</span> <span class="s2">&quot;TuanHotel&quot;</span><span class="p">,</span> <span class="s2">&quot;Contact&quot;</span><span class="p">)</span>
+</span><span class="line">		<span class="p">}))</span>
+</span><span class="line">	<span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">		<span class="nx">a</span><span class="p">.</span><span class="nx">loading</span><span class="p">.</span><span class="nx">hide</span><span class="p">(),</span> <span class="nx">a</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="s2">&quot;.J_detail&quot;</span><span class="p">,</span> <span class="s2">&quot;\u4eb2\uff0c\u7f51\u7edc\u5f00\u5c0f\u5dee\uff0c\u8bfb\u53d6\u6570\u636e\u5931\u8d25\u3002&quot;</span> <span class="o">+</span> <span class="nx">o</span><span class="p">)</span>
+</span><span class="line">	<span class="p">})</span>
+</span><span class="line"><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="section-3">代码分析</h2>
+
+<p>在上面这段代码的 loadItemData 方法中，第 6 行 <code>localStorage.hotelLon</code>，在这里读取了 localStorage 的 hotelLon 信息，顾名思义，就是酒店的经度，但是提示的错误信息是无法读取 hotelLon。如果对 localStorage 有所了解的话，应该知道即便没有 hotelLon，也不会报错，而是 <strong>undefined</strong>。</p>
+
+<p><img src="/images/blog/android/e6ff9ad286da4dae4c75ea3613980ff5.png" alt="localStorage fetch a non-existed variable" /></p>
+
+<h3 id="localstorage">localStorage</h3>
+
+<p>到这里，需要补充一下 localStorage 的知识。</p>
+
+<p>HTML5 Storage主要有：</p>
+
+<ul>
+  <li>sessionStorage: 会话 (session) 级别的数据存储，会话结束后，相关的数据就会被清除掉。</li>
+  <li>localStorage: 用于持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的。</li>
+</ul>
+
+<p>作为 HTML5 标准的一部分，绝大多数的浏览器都是支持 localStorage 的，但是鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。</p>
+
+<h1 id="section-4">解决问题</h1>
+
+<p>经过层层分析，问题指向如何开启 localStorage 了。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="c1">// Gets whether the DOM Storage APIs are enabled.</span>
+</span><span class="line"><span class="n">webView</span><span class="o">.</span><span class="na">getSettings</span><span class="o">().</span><span class="na">setDomStorageEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h1 id="section-5">参考</h1>
+<ol>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage">DOM Storage guide</a></li>
+  <li><a href="http://diveintohtml5.info/detect.html">Dive into HTML5: LOCAL STORAGE</a></li>
+  <li><a href="http://blog.baiwand.com/?post=184">HTML5之Web Storage(本地存储)详解</a></li>
+  <li><a href="http://stackoverflow.com/questions/5858760/what-does-enable-dom-storage-api-mean">StakeOverflow: What does “enable DOM storage API” mean?</a></li>
+</ol>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style addthis_16x16_style">
+	
+	<a class="addthis_button_sinaweibo"></a>
+	
+	
+	<a class="addthis_button_facebook"></a>
+	
+	
+	<a class="addthis_button_twitter"></a>
+	
+	
+	
+	<a class="addthis_button_compact"></a>
+	<a class="addthis_counter addthis_bubble_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Ryan Hoo
+
+<br/>
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'ryanhoo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled/';
+        var disqus_url = 'http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42350714-2']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+		</div>
+	</div>
+</body>
+</html>

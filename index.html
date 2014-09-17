@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="Aug 12th, 2014 Xcode Comments 安装 Xcode 后命令行提示错误 在安装完新版本的 Xcode 后，在 iTerm 中执行命令总会有这样的提示：Agreeing to the Xcode/iOS license requires admin privileges, &hellip;">
+	<meta name="description" content="Sep 17th, 2014 Android, Tricky Bugs, WebView Comments [疑难杂症] Android WebView 无法打开天猫页面 Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,45 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-17T11:14:25+08:00" data-updated="true" itemprop="datePublished">Sep 17<span>th</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>Android</a>, <a class='category' href='/blog/categories/tricky-bugs/'>Tricky Bugs</a>, <a class='category' href='/blog/categories/webview/'>WebView</a>
+
+
+</div>
+		
+			<span class="comments"><a href="/blog/2014/09/17/android-webview-setdomstorageenabled/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/09/17/android-webview-setdomstorageenabled/" itemprop="url">[疑难杂症] Android WebView 无法打开天猫页面</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		
+		
+		
+	</div>
+
+
+		Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的，简单设置一行代码 webView.getSettings().setDomStorageEnabled(true) 即可解决，但背后的原因又是什么呢？
+	</article>
 
 
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -435,49 +474,6 @@
 
 		上一篇博客中，我们学习到了如何使用 Android 相册截图。在这篇博客中，我将向大家展示如何拍照截图。
 拍照截图有点儿特殊，要知道，现在的 Android 智能手机的摄像头都是几百万的像素，拍出来的图片都是非常大的。因此，我们不能像对待相册截图一样使用 Bitmap 小图，无论大图小图都统一使用 Uri 进行操作。 
-	</article>
-
-
-	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-		
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-03T22:21:35+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2014</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/android/'>Android</a>
-
-
-</div>
-		
-			<span class="comments"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/" itemprop="url">Android大图片裁剪终极解决方案（中：从相册截图）</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		
-		
-		
-	</div>
-
-
-		在这篇博客中，我将向大家展示如何从相册截图。
-上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解 Android 本身的限制，以及我们应当采取的实现方案。
-根据我们的分析与总结，图片的来源有拍照和相册，而可采取的操作有
-- 使用Bitmap并返回数据 - 使用Uri不返回数据
-前面我们了解到，使用Bitmap有可能会导致图片过大，而不能返回实际大小的图片，我将采用大图Uri，小图Bitmap的数据存储方式。 
 	</article>
 
 

@@ -7,8 +7,8 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="May 26th, 2014 Android Comments Android大图片裁剪终极解决方案（上：原理分析） 约几个月前，我正为公司的 APP 在Android手机上实现拍照截图而烦恼不已。
-上网搜索，确实有不少的例子，大多都是抄来抄去，而且水平多半处于 demo 的样子， &hellip;">
+	<meta name="description" content="Jun 3rd, 2014 Android Comments Android大图片裁剪终极解决方案（中：从相册截图） 在这篇博客中，我将向大家展示如何从相册截图。
+上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解 Android 本身的限制，以及我们应当采取的实现方案。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,49 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+		
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T22:21:35+08:00" data-updated="true" itemprop="datePublished">Jun 3<span>rd</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>Android</a>
+
+
+</div>
+		
+			<span class="comments"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/" itemprop="url">Android大图片裁剪终极解决方案（中：从相册截图）</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		
+		
+		
+	</div>
+
+
+		在这篇博客中，我将向大家展示如何从相册截图。
+上一篇博客中，我就拍照截图这一需求进行了详细的分析，试图让大家了解 Android 本身的限制，以及我们应当采取的实现方案。
+根据我们的分析与总结，图片的来源有拍照和相册，而可采取的操作有
+- 使用Bitmap并返回数据 - 使用Uri不返回数据
+前面我们了解到，使用Bitmap有可能会导致图片过大，而不能返回实际大小的图片，我将采用大图Uri，小图Bitmap的数据存储方式。 
+	</article>
 
 
 	<article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
