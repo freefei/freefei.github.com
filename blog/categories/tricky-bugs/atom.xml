@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Tricky Bugs | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/tricky-bugs/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-09-17T14:29:06+08:00</updated>
+  <updated>2014-09-17T14:33:24+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -35,6 +35,12 @@
   <li><a href="#section-4">解决问题</a></li>
   <li><a href="#section-5">参考</a></li>
 </ul>
+
+<blockquote>
+  <p>欢迎转载，但请务必注明出处！</p>
+
+  <p><a href="http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled">http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled</a></p>
+</blockquote>
 
 <p>Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的，通过搜索，找到解决方法，简单设置一行代码 
 <code>webView.getSettings().setDomStorageEnabled(true)</code> 即可解决问题，但背后的原因又是什么呢？</p>

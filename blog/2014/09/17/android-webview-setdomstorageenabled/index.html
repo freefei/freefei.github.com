@@ -7,7 +7,7 @@
 	<meta name="author" content="Ryan Hoo">
 
 	
-	<meta name="description" content="[疑难杂症] Android WebView 无法打开天猫页面 定位问题 Chrome Inspcet Device Android Logcat 分析问题 追根溯源 代码分析 localStorage 解决问题 参考 Android WebView 突然无法打开天猫的详情页，一直停留在加载状态 &hellip;">
+	<meta name="description" content="[疑难杂症] Android WebView 无法打开天猫页面 定位问题 Chrome Inspcet Device Android Logcat 分析问题 追根溯源 代码分析 localStorage 解决问题 参考 欢迎转载，但请务必注明出处！ http://ryanhoo.github. &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -99,6 +99,12 @@
   <li><a href="#section-4">解决问题</a></li>
   <li><a href="#section-5">参考</a></li>
 </ul>
+
+<blockquote>
+  <p>欢迎转载，但请务必注明出处！</p>
+
+  <p><a href="http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled">http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled</a></p>
+</blockquote>
 
 <p>Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的，通过搜索，找到解决方法，简单设置一行代码 
 <code>webView.getSettings().setDomStorageEnabled(true)</code> 即可解决问题，但背后的原因又是什么呢？</p>
