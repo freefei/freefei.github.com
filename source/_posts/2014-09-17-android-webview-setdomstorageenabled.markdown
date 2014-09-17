@@ -10,6 +10,9 @@ desc: Android WebView 突然无法打开天猫的详情页，一直停留在加�
 * Contents
 {:toc}
 
+> 欢迎转载，但请务必注明出处！
+>
+> [http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled][9]
 
 Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的，通过搜索，找到解决方法，简单设置一行代码 
 ``webView.getSettings().setDomStorageEnabled(true)`` 即可解决问题，但背后的原因又是什么呢？
@@ -124,3 +127,4 @@ webView.getSettings().setDomStorageEnabled(true);
 [6]: http://diveintohtml5.info/detect.html
 [7]: http://blog.baiwand.com/?post=184
 [8]: http://stackoverflow.com/questions/5858760/what-does-enable-dom-storage-api-mean
+[9]: http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled
