@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[疑难杂症] Android WebView 无法打开天猫页面"
+title: "【疑难杂症】Android WebView 无法打开天猫页面"
 date: 2014-09-17 11:14:25 +0800
 comments: true
 categories: [Android, WebView, Tricky Bugs]
