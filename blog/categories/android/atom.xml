@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: [Android, | Ryan Hoo]]></title>
+  <title><![CDATA[Category: Android | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-09-30T22:27:54+08:00</updated>
+  <updated>2014-09-30T22:30:08+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -19,6 +19,677 @@
     <updated>2014-09-30T21:32:45+08:00</updated>
     <id>http://ryanhoo.github.io/blog/2014/09/30/custom-animations-with-fragments</id>
     <content type="html"><![CDATA[<p><a href="http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments/">Custom Animations With Fragments</a></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【疑难杂症】Android WebView 无法打开天猫页面]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled/"/>
+    <updated>2014-09-17T11:14:25+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled</id>
+    <content type="html"><![CDATA[<ul id="markdown-toc">
+  <li><a href="#section">定位问题</a>    <ul>
+      <li><a href="#chrome-inspcet-device">Chrome Inspcet Device</a></li>
+      <li><a href="#android-logcat">Android Logcat</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-1">分析问题</a>    <ul>
+      <li><a href="#section-2">追根溯源</a></li>
+      <li><a href="#section-3">代码分析</a>        <ul>
+          <li><a href="#localstorage">localStorage</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#section-4">解决问题</a></li>
+  <li><a href="#section-5">参考</a></li>
+</ul>
+
+<blockquote>
+  <p>欢迎转载，但请务必注明出处！</p>
+
+  <p><a href="http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled">http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled</a></p>
+</blockquote>
+
+<p>Android WebView 突然无法打开天猫的详情页，一直停留在加载状态。而在此之前，应用里是完全可以正常访问的，通过搜索，找到解决方法，简单设置一行代码 
+<code>webView.getSettings().setDomStorageEnabled(true)</code> 即可解决问题，但背后的原因又是什么呢？</p>
+
+<p><img src="/images/blog/android/34cb73b6bb0dfbac04b1f50d6a58c05a.png" alt="Android WebView Can't Load TMall Pages" /></p>
+
+<p>我们不能只是做解决问题的程序员，还要做好奇的程序员，跟我来一探究竟吧。</p>
+
+<h1 id="section">定位问题</h1>
+
+<p>本着<strong>发现问题 -&gt; 分析问题 -&gt; 解决问题</strong>的步骤，接下来我们要定位问题的来源。</p>
+
+<h2 id="chrome-inspcet-device">Chrome Inspcet Device</h2>
+
+<p>我首先想到的是，Android 4.4 以后的 WebView 是基于 chromium 内核的，这带来了一个福利是，我们可以在 chrome 中 inspect device，像普通网页一样，进行 debug，精准、快速定位问题来源。正好我手头有 Nexus 5 刷的是 <strong>Android L Preview</strong> 还有 Mi3 是最新的 <strong>MIUI V6</strong>，打开 Chrome，<code>Tools</code> -&gt; <code>Inspect Devices</code>，就可以看到原生应用里的 WebView 页面了。</p>
+
+<p><img src="/images/blog/android/d5681ec2448ebb4bfd6e22eb805d7ad6.png" alt="Chrome Inspect Devices" /></p>
+
+<p>点击 <code>inspect</code> 即可进入 <strong>Developer Tools</strong>，一切尽在掌控，可以清楚看到 console 输出的错误信息。</p>
+
+<p><img src="/images/blog/android/45c5b879756949cb1e70523f5aad0276.png" alt="Chrome Developer Tools" /></p>
+
+<h2 id="android-logcat">Android Logcat</h2>
+
+<p>实际上，网页加载中 js 输出的错误信息也完整的打印在了 Logcat 中。</p>
+
+<p><code>java
+09-17 11:28:20.265  25993-25993/ I/chromium﹕ [INFO:CONSOLE(2)] "TypeError: Cannot read property 'hotelLon' of null
+  at BaseDerived.g.extend.loadItemData (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??pages/tuan/detail.js:2:8436)
+  at BaseDerived.g.extend.initializer (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??pages/tuan/detail.js:2:340)
+  at BaseDerived.initializer (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:24184)
+  at BaseDerived.Base (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:24486)
+  at BaseDerived.S.extend.callSuper (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:26305)
+  at BaseDerived (eval at extend (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:27954), &lt;anonymous&gt;:1:51)
+  at BaseDerived.S.extend.callSuper (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:26305)
+  at new BaseDerived (eval at extend (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:27954), &lt;anonymous&gt;:1:51)
+  at Object.&lt;anonymous&gt; (http://h5.m.taobao.com/trip/hotel/tuan/detail.html?itemId=40987076007:426:22)
+  at o (http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918:3:4799)", source: http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918 (2)
+09-17 11:28:20.265  25993-25993/ I/chromium﹕ [INFO:CONSOLE(2)] "Uncaught TypeError: Cannot read property 'hotelLon' of null", source: http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??libs/seed.js,config.js,widgets/bridge/index.js,widgets/mtop/index.js?v=1203354280_108918 (2)
+</code></p>
+
+<h1 id="section-1">分析问题</h1>
+
+<h2 id="section-2">追根溯源</h2>
+
+<p>以上两种方式找到的错误信息（相同的）列出了错误栈信息，第一条错误是发生在 <code>http://g.tbcdn.cn/trip/h5-hotel/0.3.52/??pages/tuan/detail.js</code> 的第 2 行第 8436 列。在浏览器中打开这个 js 文件，显而易见它是被压缩过的，复制在 IDE 如 Sublime Text 中格式化，根据错误信息 <code>"TypeError: Cannot read property 'hotelLon' of null</code> 搜索 <strong>hotelLon</strong>，可以找到相关代码。</p>
+
+<p><code>javascript
+loadItemData: function() {
+	var a = this,
+		c = !1;
+	a.loading.show(), a.curLongitude = a.getRequestParam("longitude") 
+		|| a.getRequestParam("lng") 
+		|| localStorage.hotelLon 
+		|| "", a.curLatitude = a.getRequestParam("latitude") 
+		|| a.getRequestParam("lat") 
+		|| localStorage.hotelLat 
+		|| "", a.fetchItemData(function(d) {
+		return a.loading.hide(), a.detailData = c ? MockData.data : d.data, $.isEmptyObject(d.data) &amp;&amp; !c ? d.ret &amp;&amp; d.ret[0] ? void a.showError(".J_detail", d.ret[0].split("::")[1].split("##")[0] + o) : void a.showError(".J_detail", "\u4eb2\uff0c\u8be5\u9152\u5e97\u6682\u65e0\u56e2\u8d2d\u4fe1\u606f\u3002" + o) : "1" == a.detailData.isPreItem ? void(window.location.href = b("http://h5.m.taobao.com/awp/core/detail.htm?id=${itemId}&amp;ttid=${ttid}", {
+			itemId: a.getRequestParam("itemid"),
+			ttid: a.ttid
+		})) : (a.detailData = a.dirtyDataProcess(a.detailData), a.render($(".J_detail"), a.detailData), a.renderTitle(a.detailData), a.countdownInit(), a.submitButtonStatusInit(), n.init(function() {}), a.sliderInit(), a.detailData.propertiesMap &amp;&amp; a.skuModule.init($(".J_sku"), a.detailData), a.priceModule.init($(".J_discount")), a.loadRateInfo(a.detailData.hotelList[0].hid, a.detailData.hotelList[0].shid), a.bindSliderClick(), a.bindServiceClick(), a.bindRateClick(), a.bindSubHallClick(), a.bindDescClick(), a.bindMapClick(), a.bindSkuModuleEvent(), a.bindRecommendItemClick(), a.bindFavoriteClick(), a.bindShareClick(), a.bindSubmitEvent(), a.isTripClient() &amp;&amp; ($(".J_discount").removeClass("sticky"), $(".J_favorite").hide(), $(".fav-line").hide()), i.locStorage.set("hotel-tuan-detailHotelList", JSON.stringify({
+			hotelList: a.detailData.hotelList
+		})), $(".call-seller").parent().on("touchstart", function() {
+			a.sendPoint("Button", "TuanHotel", "Call")
+		}), void $(".wangxin-waptowx").on("touchstart", function() {
+			a.sendPoint("Button", "TuanHotel", "Contact")
+		}))
+	}, function() {
+		a.loading.hide(), a.showError(".J_detail", "\u4eb2\uff0c\u7f51\u7edc\u5f00\u5c0f\u5dee\uff0c\u8bfb\u53d6\u6570\u636e\u5931\u8d25\u3002" + o)
+	})
+},
+</code></p>
+
+<h2 id="section-3">代码分析</h2>
+
+<p>在上面这段代码的 loadItemData 方法中，第 6 行 <code>localStorage.hotelLon</code>，在这里读取了 localStorage 的 hotelLon 信息，顾名思义，就是酒店的经度，但是提示的错误信息是无法读取 hotelLon。如果对 localStorage 有所了解的话，应该知道即便没有 hotelLon，也不会报错，而是 <strong>undefined</strong>。</p>
+
+<p><img src="/images/blog/android/e6ff9ad286da4dae4c75ea3613980ff5.png" alt="localStorage fetch a non-existed variable" /></p>
+
+<h3 id="localstorage">localStorage</h3>
+
+<p>到这里，需要补充一下 localStorage 的知识。</p>
+
+<p>HTML5 Storage主要有：</p>
+
+<ul>
+  <li>sessionStorage: 会话 (session) 级别的数据存储，会话结束后，相关的数据就会被清除掉。</li>
+  <li>localStorage: 用于持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的。</li>
+</ul>
+
+<p>作为 HTML5 标准的一部分，绝大多数的浏览器都是支持 localStorage 的，但是鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。</p>
+
+<h1 id="section-4">解决问题</h1>
+
+<p>经过层层分析，问题指向如何开启 localStorage 了。</p>
+
+<p><code>java
+// Gets whether the DOM Storage APIs are enabled.
+webView.getSettings().setDomStorageEnabled(true);
+</code></p>
+
+<h1 id="section-5">参考</h1>
+<ol>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage">DOM Storage guide</a></li>
+  <li><a href="http://diveintohtml5.info/detect.html">Dive into HTML5: LOCAL STORAGE</a></li>
+  <li><a href="http://blog.baiwand.com/?post=184">HTML5之Web Storage(本地存储)详解</a></li>
+  <li><a href="http://stackoverflow.com/questions/5858760/what-does-enable-dom-storage-api-mean">StakeOverflow: What does “enable DOM storage API” mean?</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[Parallax Animation]实现知乎 Android 客户端启动页视差滚动效果]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu/"/>
+    <updated>2014-07-16T18:22:58+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu</id>
+    <content type="html"><![CDATA[<ul id="markdown-toc">
+  <li><a href="#section">前言</a></li>
+  <li><a href="#section-1">界面分析</a></li>
+  <li><a href="#parallax-scrolling">Parallax Scrolling</a>    <ul>
+      <li><a href="#viewpagerpagetransformer">ViewPager.PageTransformer</a>        <ul>
+          <li><a href="#param-1-view-page">Param 1: View page</a></li>
+          <li><a href="#param-2-float-position">Param 2: float position</a></li>
+        </ul>
+      </li>
+      <li><a href="#parallaxtransformer">ParallaxTransformer</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-2">背景渐变</a></li>
+  <li><a href="#section-3">源码</a>    <ul>
+      <li><a href="#github--zhihu-parallax-animation3">Github : <a href="https://github.com/ryanhoo/Zhihu-Parallax-Animation">Zhihu-Parallax-Animation</a></a></li>
+    </ul>
+  </li>
+  <li><a href="#section-4">参考</a></li>
+</ul>
+
+<blockquote>
+  <p>欢迎转载，但请务必注明出处！</p>
+
+  <p><a href="http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu/">http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu/</a></p>
+</blockquote>
+
+<h1 id="section">前言</h1>
+
+<p><code>Parallax Scrolling (视差滚动)</code>，是一种常见的动画效果。视差一词来源于天文学，但在日常生活中也有它的身影。在疾驰的动车上看风景时，会发现越是离得近的，相对运动速度越快，而远处的山川河流只是缓慢的移动着，这就是最常见的视差效果。视差动画独有的层次感能带来极为逼真的视觉体验，<strong>iOS</strong>、<strong>Android Launcher</strong>、<strong>Website</strong> 都将视差动画作为提升用户视觉愉悦度的不二选择。</p>
+
+<p>客户端应用第一次打开出现引导页也不是什么新鲜的事儿，<code>ViewPager</code> 配上几张设计师精心绘制的图片，分分钟即可了事。但是总有人把平凡的事情做到不平凡，如本文的知乎客户端，亦或是新浪微博贺岁版，百度贴吧某版等众多应用里都出现了视差动画的身影，随着用户手指的滑动，反馈以灵动、贴近真实的视觉以及操作体验，对应用的初始印象登时被提升到一个极高的点。</p>
+
+<p>给我印象最深的是去年新浪微博的贺岁版，引导页是一系列的年画，里面有红色剪纸的小孩儿，滑动界面的时候感觉这些元素在『动』，是真正的灵动，能勾起人童年的回忆，年味儿十足。不过话说我年怎么过跟新浪微博一毛钱关系都没有，但是这个启动页却是深得我意。只是这个版本的微博找不到了，正好前两天看到知乎的启动页做的也不错，就正好拿来练练手吧。</p>
+
+<p>本文就知乎 Android 客户端启动页面为例，教你如何实现视差滚动效果。</p>
+
+<p><img src="/images/blog/android/zhihu-parallax-animation.gif" alt="知乎 Android 客户端启动页" /></p>
+
+<h1 id="section-1">界面分析</h1>
+
+<p>细心把玩下知乎的启动页，不难分析出来，视差动画主要体现在背景层渐变、内容层元素差异滚动上，动画内容分别是：</p>
+
+<ul>
+  <li>内容：元素差异滚动，形成视差效果(*)</li>
+  <li>背景：随着界面的滑动，颜色由深蓝色渐变为浅蓝色(*)</li>
+  <li>文字：底部提示文案会随页面变动而切换，有简单的淡入淡出效果</li>
+  <li>界面动画：界面打开，元素的出场动画（第一页以及最后一页）</li>
+</ul>
+
+<p>鉴于其它几项比较简单，本文主要讲视差动画以及背景渐变的实现，其它几项请自行参阅代码，见后文。</p>
+
+<h1 id="parallax-scrolling">Parallax Scrolling</h1>
+
+<p>这里的视差滚动效果，主要表现为内容元素滚动速率的差异上。比如在 <code>ViewPager</code> 中滑动了 <code>1px</code> ，而 <strong>A</strong> 元素移动 <code>2px</code> ， <strong>B</strong> 元素移动 <code>1.5px</code> ，这种移动差距的比率，我称之为 <code>parallaxCofficient</code> ，即 <strong>视差系数</strong> 或者 <strong>视差速率</strong> ，正是同一个界面中的元素，由于层级不同，赋予的视差系数不同，在移动速度上的差异形成了视差的错觉，这就是我们要追求的效果。</p>
+
+<p>那知道原理就好办了，使用 <code>ViewPager.OnPageChangeListener</code> ，动态计算不就得了。 no no no ! 后面完成背景渐变效果确实需要计算这个，但是 <code>ViewPager</code> 已经为我们准备好了变形元素 <strong>transformium</strong> : <code>ViewPager.PageTransformer</code> ，它有一个抽象方法 <code>transformPage(View page, float position)</code> ，正是为我们完成视差动画量身定制的。</p>
+
+<h2 id="viewpagerpagetransformer">ViewPager.PageTransformer</h2>
+
+<p><a href="https://developer.android.com/reference/android/support/v4/view/ViewPager.PageTransformer.html">PageTransformer</a> 在 <code>ViewPager</code> 滑动时被触发，它为我们自定义页面中进行视图变换打开了一扇大门。</p>
+
+<p><code>java
+public abstract void transformPage (View page, float position)
+</code></p>
+
+<p>在 <code>ViewPager</code> 源码中，我们可以很直观的看到它的调用过程：</p>
+
+<p>```java
+// ViewPager#onPageScrolled
+if (mPageTransformer != null) {
+    final int scrollX = getScrollX();
+    final int childCount = getChildCount();
+    for (int i = 0; i &lt; childCount; i++) {
+        final View child = getChildAt(i);
+        final LayoutParams lp = (LayoutParams) child.getLayoutParams();</p>
+
+<pre><code>    if (lp.isDecor) continue;
+
+    final float transformPos = (float) (child.getLeft() - scrollX) / getClientWidth();
+    mPageTransformer.transformPage(child, transformPos);
+} } ```
+</code></pre>
+
+<h4 id="param-1-view-page">Param 1: View page</h4>
+
+<p>从上面的代码中，不难看出，<code>page</code> 就是当前被滑动的页面，调试得知，每一个 <strong>child view</strong> 被 <code>NoSaveStateFrameLayout</code> 包装，也就是说 <code>page.getChildAt(0)</code> 即是每个 <code>page</code> 实际的 <strong>child view</strong> 。</p>
+
+<h4 id="param-2-float-position">Param 2: float position</h4>
+
+<p><code>position</code> 这个参数不看代码或者文档，总会误以为就是我们熟知的 <code>integer position</code> ，不过它实际上是滑动页面的一个相对比例，本质跟 1、2、3、4 这种 <code>position</code> 是一样的。</p>
+
+<p>比如知乎启动页共有 <strong>6</strong> 个页面，分别是 <strong>A</strong>、<strong>B</strong>、<strong>C</strong>、<strong>D</strong>、<strong>E</strong>、<strong>F</strong> 初始状态也就是 <strong>A</strong> 页面静止时，<strong>A</strong> 页面的 <code>position</code> 正好是 <strong>0</strong> ，<strong>B</strong> 页面是 <strong>1</strong> 。而后滑动页面（B -&gt; A），在这个过程中 <strong>A</strong> 的 <code>position</code> 是间于 <code>[-1, 0]</code> ，<strong>B</strong> 页面则是间于 <code>[0, 1]</code> 。</p>
+
+<p>不过这个参数的文档却是简单不够直观，对照上面的例子，现在应该很清晰了。</p>
+
+<blockquote>
+  <p>Position of page relative to the current front-and-center position of the pager. 0 is front and center. 1 is one full page position to the right, and -1 is one page position to the left.</p>
+</blockquote>
+
+<h2 id="parallaxtransformer">ParallaxTransformer</h2>
+
+<p>根据上面的分析，我们可以得出一个相对简单的自定义 <strong>transformer</strong> ，对 <code>page view</code> 进行遍历，递增或者递减其 <code>parallaxCofficient</code> ，以得到我们预期的效果，具体的系数设置请参考代码。</p>
+
+<p>```java
+class ParallaxTransformer implements ViewPager.PageTransformer {</p>
+
+<pre><code>float parallaxCoefficient;
+float distanceCoefficient;
+
+public ParallaxTransformer(float parallaxCoefficient, float distanceCoefficient) {
+    this.parallaxCoefficient = parallaxCoefficient;
+    this.distanceCoefficient = distanceCoefficient;
+}
+
+@Override
+public void transformPage(View page, float position) {
+    float scrollXOffset = page.getWidth() * parallaxCoefficient;
+
+    // ...
+    // layer is the id collection of views in this page
+    for (int id : layer) {
+        View view = page.findViewById(id);
+        if (view != null) {
+            view.setTranslationX(scrollXOffset * position);
+        }
+        scrollXOffset *= distanceCoefficient;
+    }
+} } ```
+</code></pre>
+
+<h1 id="section-2">背景渐变</h1>
+
+<p>留心才会发现，从第一页滑动到最后一页，背景色会平滑的从深蓝色过度到浅蓝色，这种效果又该怎么实现呢？</p>
+
+<p>用过 <code>Property Animation</code> 的同学应该知道，以前的 <code>Animation</code> 只能用在 <strong>View</strong> 上，而 <code>Property Animation</code> 却可以用在任意类型属性值上，这归功于 <code>TypeEvaluator</code> 。</p>
+
+<p>正好我们有 <code>ArgbEvaluator</code> ，它可以估算两个颜色值之间，任意部分的色值。因此，只需要指定起始色值以及最终的色值，传入滑动所对应的 <code>fraction</code> 即当前位置相对总距离的比例值，即可获得相应的色值。</p>
+
+<p>```java
+public class ArgbEvaluator implements TypeEvaluator {</p>
+
+<pre><code>public Object evaluate(float fraction, Object startValue, Object endValue) {
+	// ...
+} } ```
+</code></pre>
+
+<p>当然，前面说到需要使用 <code>ViewPager.OnPageChangeListener</code> 的：</p>
+
+<p>```java
+class GuidePageChangeListener implements ViewPager.OnPageChangeListener {</p>
+
+<pre><code>ArgbEvaluator mColorEvaluator;
+
+int mPageWidth, mTotalScrollWidth;
+
+int mGuideStartBackgroundColor, mGuideEndBackgroundColor;
+
+public GuidePageChangeListener() {
+    mColorEvaluator = new ArgbEvaluator();
+
+    mPageWidth = getWindowManager().getDefaultDisplay().getWidth();
+    mTotalScrollWidth = mPageWidth * mAdapter.getCount();
+
+    mGuideStartBackgroundColor = getResources().getColor(R.color.guide_start_background);
+    mGuideEndBackgroundColor = getResources().getColor(R.color.guide_end_background);
+}
+
+@Override
+public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    float ratio = (mPageWidth * position + positionOffsetPixels) / (float) mTotalScrollWidth;
+    Integer color = (Integer) mColorEvaluator.evaluate(ratio, mGuideStartBackgroundColor, mGuideEndBackgroundColor);
+    mPager.setBackgroundColor(color);
+}
+
+@Override
+public void onPageSelected(int position) {}
+
+@Override
+public void onPageScrollStateChanged(int state) {} } ```
+</code></pre>
+
+<h1 id="section-3">源码</h1>
+
+<p>代码已经 <strong>push</strong> 到 <strong>Github</strong> 了，诸位自取。不过请注意，其素材均取自于知乎 Android 客户端（你懂的），学习交流即可，请勿用作商业用途。</p>
+
+<p>还求更优雅的实现方式，欢迎发起 <code>pull request</code> 。</p>
+
+<h2 id="github--zhihu-parallax-animation3">Github : <a href="https://github.com/ryanhoo/Zhihu-Parallax-Animation">Zhihu-Parallax-Animation</a></h2>
+
+<h1 id="section-4">参考</h1>
+
+<ol>
+  <li><a href="http://blog.neteril.org/blog/2014/01/02/using-parallax-for-fun-and-profit/">Using Parallax for Fun and Profit</a></li>
+  <li><a href="http://www.cnblogs.com/JoannaQ/archive/2013/02/08/2909111.html">视差滚动(Parallax Scrolling)效果的原理和实现</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Timer(Task) ？ Not in Android ！]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/"/>
+    <updated>2014-06-26T20:55:04+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android</id>
+    <content type="html"><![CDATA[<ul id="markdown-toc">
+  <li><a href="#section">前言</a></li>
+  <li><a href="#section-1">解决方案</a>    <ul>
+      <li><a href="#timer">Timer</a></li>
+      <li><a href="#timertask">TimerTask</a></li>
+      <li><a href="#section-2">操作定时任务</a></li>
+    </ul>
+  </li>
+  <li><a href="#section-3">参考</a></li>
+</ul>
+
+<h2 id="section">前言</h2>
+
+<p>我们对于 <code>java.util.Timer(Task)</code> 这两个类可谓不陌生，定时任务处处可见它俩如胶似漆的背影。只是，有心人必定会发现在 <strong>Android UI</strong> 中使用，它们带来的麻烦远远大于便利。</p>
+
+<p>我在多个场景碰到过这个问题，往往是忍气吞声，不厌其烦的处理着它们的『身后事』，还得提防它们时而罢工的臭毛病。</p>
+
+<h2 id="section-1">解决方案</h2>
+
+<p>其实使用 Android 自己的 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 就可以解决这个问题。而且有如下优点：</p>
+
+<ul>
+  <li>重用</li>
+</ul>
+
+<p>可以很好的重用我们的定时任务，而以往使用 <code>Timer(Task)</code> ，我们不得不销毁，再 <code>new Timer(Task)</code>，不得不说是一种很粗鲁的方式。</p>
+
+<ul>
+  <li>可控性</li>
+</ul>
+
+<p><code>Timer(Task)</code> 的组合更像是离弦之箭，不能收发自如。而使用 <code>Handler</code> 的方式，调用 <code>removeCallbacks</code> 即可轻松暂停或者重置任务。</p>
+
+<h3 id="timer">Timer</h3>
+
+<p>使用 <a href="https://developer.android.com/reference/android/os/Handler.html">Handler</a> 来替代 <a href="https://developer.android.com/reference/java/util/Timer.html">Timer</a>。</p>
+
+<p><code>java
+Handler timerHandler = new Handler()
+</code></p>
+
+<h3 id="timertask">TimerTask</h3>
+
+<p>简单可重用的 <code>Runnable</code> ，用来执行定时任务，但是这里是用的比较 <strong>Hack</strong> 的方式来实现循环的 Timer 功能的。</p>
+
+<p>```java
+CustomTimerTask timerTask = new CustomTimerTask();</p>
+
+<p>class CustomTimerTask implements Runnable {
+    @Override
+    public void run() {
+        // scheduled tasks</p>
+
+<pre><code>    // relaunch the task
+    timerHandler.postDelayed(this, TIME_INTERVAL);
+} } ```
+</code></pre>
+
+<h3 id="section-2">操作定时任务</h3>
+
+<p>我们可以轻松的启动或者停止这个定时任务。</p>
+
+<p><code>java
+timerHandler.postDelayed(timerTask, TIME_INTERVAL); // launch the task
+timerHandler.removeCallbacks(timerTask);	// stop it
+</code></p>
+
+<h2 id="section-3">参考</h2>
+
+<p><a href="http://www.mopri.de/2010/timertask-bad-do-it-the-android-way-use-a-handler/">Timer(Task) = bad! Do it the Android way: Use a Handler :)</a></p>
+
+<p><a href="http://docs.huihoo.com/android/2.1/resources/articles/timed-ui-updates.html">Updating the UI from a Timer</a></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【构建Android缓存模块】（三）Controller & 异步图片加载]]></title>
+    <link href="http://ryanhoo.github.io/blog/2014/06/17/build-android-cache-module-3/"/>
+    <updated>2014-06-17T15:48:38+08:00</updated>
+    <id>http://ryanhoo.github.io/blog/2014/06/17/build-android-cache-module-3</id>
+    <content type="html"><![CDATA[<p>上一篇博客我们学习了缓存模块的实现， 缓存分做两份：<code>Memory Cache</code>和<code>File Cache</code>。方法也很简单，分别是：</p>
+
+<ul>
+  <li>存储文件</li>
+  <li>按唯一key值索引文件</li>
+  <li>清空缓存</li>
+</ul>
+
+<p>区别在于内存缓存读取优先，因为它读写的速度更快。但是考虑到内存限制，退而选用文件存储，分担内存缓存的压力。</p>
+
+<p>原理非常简单，在第一课中已经详细分析了。那么要怎么才能将这个缓存模块与UI模块的显示关联起来呢？在这里我们需要一个控制器，掌管数据流向和读写，同时控制UI的显示。</p>
+
+<p>那么这个控制器需要以下的元素：</p>
+
+<ul>
+  <li>内存缓存</li>
+  <li>硬盘缓存</li>
+  <li>异步任务处理</li>
+  <li>控制UI显示</li>
+</ul>
+
+<p><code>java
+//caches
+private MemoryCache memoryCache;
+private FileCache fileCache;
+//Asynchronous task
+private static AsyncImageLoader imageLoader;
+</code></p>
+
+<p><code>Memory Cache</code>和<code>File Cache</code>在上一课中有具体的实现，这里有一个异步的任务处理器—— <code>AsyncImageDownloader</code>，它用来在后台下载数据，完成下载后存储数据到缓存中，并更新UI的显示 。让我们来看看它是如何实现的：</p>
+
+<p>```java
+class AsyncImageDownloader extends AsyncTask&lt;Void, Void, Bitmap&gt;{
+	private ImageView imageView;
+	private String fileName;</p>
+
+<pre><code>public AsyncImageDownloader(ImageView imageView, String fileName){
+	this.imageView = imageView;
+	this.fileName = fileName;
+}
+
+@Override
+protected void onPreExecute() {
+	super.onPreExecute();
+	imageView.setImageResource(R.drawable.placeholder);
+}
+
+@Override
+protected Bitmap doInBackground(Void... arg0) {
+	String url = Utils.getRealUrlOfPicture(fileName);
+	HttpResponse response = new HttpRetriever().requestGet(url, null);
+	Log.i(TAG, "url: " + url);
+	Log.i(TAG, "respone: " + response);
+	InputStream in = null;
+	try {
+		if(response != null &amp;&amp; response.getEntity() != null)
+			in = response.getEntity().getContent();
+	} catch (IllegalStateException e) {
+		e.printStackTrace();
+		return null;
+	} catch (IOException e) {
+		e.printStackTrace();
+		return null;
+	}
+	
+	//TODO to be optimized: adjust the size of bitmap
+	return BitmapFactory.decodeStream(in);
+}
+
+@Override
+protected void onPostExecute(Bitmap result) {
+	super.onPostExecute(result);
+	if(result != null &amp;&amp; imageView != null)
+		imageView.setImageBitmap(result);
+	
+	//TODO cache the bitmap both in sdcard &amp; memory
+	memoryCache.put(fileName, result);// key is a unique token, value is the bitmap
+	
+	fileCache.put(fileName, result);
+} } ```
+</code></pre>
+
+<p>可以看到这个类的构造函数需要两个参数，分别是文件名和对应要显示的<code>ImageView</code>，那么在任务开始的时候，可以为该<code>ImageView</code>设置未下载状态的图片，然后下载完成后更新UI。</p>
+
+<blockquote>
+  <p>注：需要提醒的是，这里的唯一key值，我使用的是文件名，因为我接收到的文件名是唯一的。猿媛们也可以根据自己的需求，设计自己的唯一key值算法。</p>
+</blockquote>
+
+<p>接下来，我们需要读用<code>key</code>值索引相应的<code>Bitmap</code>：</p>
+
+<p>```java
+public Bitmap getBitmap(String key){
+	Bitmap bitmap = null;
+	//1. search memory
+	bitmap = memoryCache.get(key);</p>
+
+<pre><code>//2. search sdcard
+if(bitmap == null){
+	File file = fileCache.getFile(key);
+	if(file != null)
+		bitmap = BitmapHelper.decodeFile(file, null);
+}
+
+return bitmap; } ``` 到这里，一个简单的缓存框架就搭建成功了。它简洁有效，但是非常单薄，似乎不够强大，需要你们根据自己的需求进行修改。另外它本来的目的就是用于演示，理解这个以后，我们再来看``Google``的``BitmapFun``。
+</code></pre>
+
+<p>不过，我将它应用在一个小项目中，性能还不错。对于小项目的需求，应该是够的。</p>
+
+<p>最后，附上使用方法，以及整个类的代码。</p>
+
+<h2 id="section">使用</h2>
+
+<p><code>java
+AsyncImageLoader imageLoader = AsyncImageLoader.getInstance(this);、
+imageLoader.displayBitmap(imageView, fileName);
+</code></p>
+
+<h2 id="asyncimageloader">AsyncImageLoader</h2>
+
+<p>```java
+public class AsyncImageLoader {</p>
+
+<pre><code>private static final String TAG = "AsyncImageLoader";
+
+//caches
+private MemoryCache memoryCache;
+private FileCache fileCache;
+//Asynchronous task
+private static AsyncImageLoader imageLoader;
+
+class AsyncImageDownloader extends AsyncTask&lt;Void, Void, Bitmap&gt;{
+	private ImageView imageView;
+	private String fileName;
+	
+	public AsyncImageDownloader(ImageView imageView, String fileName){
+		this.imageView = imageView;
+		this.fileName = fileName;
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		imageView.setImageResource(R.drawable.placeholder);
+	}
+	
+	@Override
+	protected Bitmap doInBackground(Void... arg0) {
+		String url = Utils.getRealUrlOfPicture(fileName);
+		HttpResponse response = new HttpRetriever().requestGet(url, null);
+		Log.i(TAG, "url: " + url);
+		Log.i(TAG, "respone: " + response);
+		InputStream in = null;
+		try {
+			if(response != null &amp;&amp; response.getEntity() != null)
+				in = response.getEntity().getContent();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		//TODO to be optimized: adjust the size of bitmap
+		return BitmapFactory.decodeStream(in);
+	}
+	
+	@Override
+	protected void onPostExecute(Bitmap result) {
+		super.onPostExecute(result);
+		if(result != null &amp;&amp; imageView != null)
+			imageView.setImageBitmap(result);
+		
+		//TODO cache the bitmap both in sdcard &amp; memory
+		memoryCache.put(fileName, result);// key is a unique token, value is the bitmap
+		
+		fileCache.put(fileName, result);
+	}
+}
+
+private AsyncImageLoader(Context context){
+	this.memoryCache 		= 	new MemoryCache();
+	this.fileCache			= 	new FileCache(context);
+}
+
+public static AsyncImageLoader getInstance(Context context){
+	if(imageLoader == null)
+		imageLoader = new AsyncImageLoader(context);
+	
+	return imageLoader;
+}
+
+public void displayBitmap(ImageView imageView, String fileName){
+	//no pic for this item
+	if(fileName == null || "".equals(fileName))
+		return;
+	
+	Bitmap bitmap = getBitmap(fileName);
+	//search in cache, if there is no such bitmap, launch downloads
+	if(bitmap != null){
+		imageView.setImageBitmap(bitmap);
+	}
+	else{
+		Log.w(TAG, "Can't find the file you required.");
+		new AsyncImageDownloader(imageView, fileName).execute();
+	}
+}
+
+public Bitmap getBitmap(String key){
+	Bitmap bitmap = null;
+	//1. search memory
+	bitmap = memoryCache.get(key);
+	
+	//2. search sdcard
+	if(bitmap == null){
+		File file = fileCache.getFile(key);
+		if(file != null)
+			bitmap = BitmapHelper.decodeFile(file, null);
+	}
+	
+	return bitmap;
+}
+
+public void clearCache(){
+	if(memoryCache != null)
+		memoryCache.clear();
+	if(fileCache != null)
+		fileCache.clear();
+} } ```
+</code></pre>
+
+<h2 id="section-1">源码</h2>
+
+<p>附上源码，不过服务器的源码暂时还没有放出来，先看看客户端的吧。</p>
+
+<p><a href="https://github.com/ryanhoo/SoftRead">https://github.com/ryanhoo/SoftRead</a></p>
 
 ]]></content>
   </entry>
