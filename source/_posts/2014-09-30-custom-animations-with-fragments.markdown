@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【译文】使用 Fragment 自定义动画"
+title: "【译】使用 Fragment 自定义动画"
 date: 2014-09-30 21:32:45 +0800
 comments: true
 categories: [Android, Animation, Fragment]
