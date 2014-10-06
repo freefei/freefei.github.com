@@ -18,5 +18,12 @@ desc: "在过去的几个月里，我一直忙于从无到有的开发一个 And
 
 试图去变革欧洲的乘车体验绝对不是一件简单的事情。这意味着我们要完成大量的工作：了解各种各样的铁路运营商、研究他们各自的文档以及预订要求、集成他们的价格/时间表、将他们的服务接口绑定到我们的系统，等等等等。从用户的角度来看，这一切都是隐藏的，但却是至关重要的，而这只是冰山一角。确实，一次旅行的需求或者愿望起始于一个简单得不能再简单的搜索请求：从哪里来？到哪里去？什么时候？跟谁？尽管这些问题非常简单，但搜索的步骤在整个预订的环节是至关重要的。毕竟这是一次旅行的起点。在设计这个 Android 应用的过程中，我们始终不忘最初的理念，尽可能简化每一步的操作流程。在这篇文章中，我很乐意跟你们分享我是如何实现这个搜索体验以及我们如何利用动画来提升用户体验。
 
+## 从网页端到移动端
+
+当我到 Capitaine Train 并开始着手 Android 应用的开发工作时，我先浏览了当下所有进行中的项目产品。比如 iOS 应用，当时还没有发布，但是已经快速成型了。另外的，比如我们的 Web 端应用，已经公开面向大众并且在用户中非常受欢迎。我那时的主要工作是构建一个能让用户觉得他们在用最好的 Android 应用订票的产品。而且这个应用必须反应出 Capitaine Train 的本质以及Android 风格的外观。由于当时 Web 应用是唯一发布的，显然我大部分的草稿都是基于它的。这是 capitainetrain.com 的搜索表单：
+
+![search form][search form]
+
 [author]: http://cyrilmottier.com/
-[origin post]: http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments/
+[origin post]: http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments
+[search form]: /images/blog/android/search_web.gif
