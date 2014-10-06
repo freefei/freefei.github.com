@@ -24,7 +24,7 @@ desc: "在过去的几个月里，我一直忙于从无到有的开发一个 And
 
 ![search form][search form]
 
-[播放 mp4][http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_web.mp4]
+[播放 mp4][search form mp4]
 
 两列（搜索表单 + 选项）的设计在网页上表现很完美，但我们很快就在移动端面临一个难题：我们没有足够的空间把表单和选项面板都放在一个屏幕里。因为手机屏幕实在是太小了，别无选择，我们只好回到 master/detail（主从） 模式。此时有两个众所周知且简单可行的选项摆在我们面前：master/detail（主从） 模式和 edition dialogs（对话框编辑） 模式。但是我们对这些模式并不满意，实际上，对话框完全打断了用户操作流程，并且在表单中至少有 4 个地方需要对话框，这将会极为令人生厌。从另一方面来说，如果每编辑一个信息就打开一个全屏的『选项』 Activity，这样高度复杂的屏幕层级关系和应用结构会导致一部分用户的流失。我想这些模式都不够有效也不适合 Capitaine Train 的 Android 应用。
 
@@ -32,9 +32,11 @@ desc: "在过去的几个月里，我一直忙于从无到有的开发一个 And
 
 ![search android][search android]
 
-[播放 mp4][http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_android.mp4]
+[播放 mp4][search android mp4]
 
 [author]: http://cyrilmottier.com/
 [origin post]: http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments
 [search form]: /images/blog/android/search_web.gif
+[search form mp4]: http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_web.mp4
 [search android]: /images/blog/android/search_android.gif
+[search android mp4]: http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_android.mp4
