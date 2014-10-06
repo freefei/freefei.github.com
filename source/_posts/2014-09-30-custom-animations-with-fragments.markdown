@@ -20,10 +20,21 @@ desc: "在过去的几个月里，我一直忙于从无到有的开发一个 And
 
 ## 从网页端到移动端
 
-当我到 Capitaine Train 并开始着手 Android 应用的开发工作时，我先浏览了当下所有进行中的项目产品。比如 iOS 应用，当时还没有发布，但是已经快速成型了。另外的，比如我们的 Web 端应用，已经公开面向大众并且在用户中非常受欢迎。我那时的主要工作是构建一个能让用户觉得他们在用最好的 Android 应用订票的产品。而且这个应用必须反应出 Capitaine Train 的本质以及Android 风格的外观。由于当时 Web 应用是唯一发布的，显然我大部分的草稿都是基于它的。这是 capitainetrain.com 的搜索表单：
+当我到 Capitaine Train 并开始着手 Android 应用的开发工作时，我先浏览了当下所有进行中的项目产品。比如 iOS 应用，当时还没有发布，但是已经快速成型了。另外的，比如我们的 Web 端应用，已经公开面向大众并且在用户中非常受欢迎。我那时的主要工作是构建一个能让用户觉得他们在用最好的 Android 应用订票的产品。而且这个应用必须反应出 Capitaine Train 的本质以及Android 风格的外观。由于当时 Web 应用是唯一发布的，显然我大部分的草稿都是基于它的。这是 [capitainetrain.com][capitainetrain.com] 的搜索表单：
 
 ![search form][search form]
+
+[播放 mp4][http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_web.mp4]
+
+两列（搜索表单 + 选项）的设计在网页上表现很完美，但我们很快就在移动端面临一个难题：我们没有足够的空间把表单和选项面板都放在一个屏幕里。因为手机屏幕实在是太小了，别无选择，我们只好回到 master/detail（主从） 模式。此时有两个众所周知且简单可行的选项摆在我们面前：master/detail（主从） 模式和 edition dialogs（对话框编辑） 模式。但是我们对这些模式并不满意，实际上，对话框完全打断了用户操作流程，并且在表单中至少有 4 个地方需要对话框，这将会极为令人生厌。从另一方面来说，如果每编辑一个信息就打开一个全屏的『选项』 Activity，这样高度复杂的屏幕层级关系和应用结构会导致一部分用户的流失。我想这些模式都不够有效也不适合 Capitaine Train 的 Android 应用。
+
+我们当然想复制 Web 网页上简洁明了的搜索方式，最终我们想到一个完美的方案。与其为每一个表单字段打开一个模态视图，我们设法将表单栏和选项面板合并在一个屏幕内。默认情况下，应用显示所有可供选择的搜索表单。点击其中任何一个字段将会切换到『编辑模式』，而此时编辑的字段在顶部可见，表单的其余部分则隐藏起来以显示该字段对应的选项面板。下面的视频显示了完整的搜索流程使用示例：
+
+![search android][search android]
+
+[播放 mp4][http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_android.mp4]
 
 [author]: http://cyrilmottier.com/
 [origin post]: http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments
 [search form]: /images/blog/android/search_web.gif
+[search android]: /images/blog/android/search_android.gif
