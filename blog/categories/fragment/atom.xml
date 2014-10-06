@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fragment | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/fragment/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-10-06T21:25:58+08:00</updated>
+  <updated>2014-10-06T21:47:42+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -21,6 +21,8 @@
     <content type="html"><![CDATA[<p>作者按：一般来说，我发表的博客通常都是与我日常工作无关的。但是下面这篇文章提及了我在 Capitaine Train 所做的一些工作。因此，我觉得需要特此声明：我在 Capitaine Train 工作，但是我在博客以及其它任何地方（Twitter, Google+ 等）表达的观点，仅限于我个人，与我的雇主无关。</p>
 
 <p>在过去的几个月里，我一直忙于从无到有的开发一个 Android 应用。这个应用以我公司的名字命名 —— Capitaine Train，可以在 Google Play 商店下载。Capitaine Train 从字面翻译成英文是 Captain Train，这是一个有着 3 年历史的创业公司，它秉持一个简单的理念而生：在欧洲买火车票是一件极为令人痛苦的事情，而我们 —— Capitaine Train 致力于通过简化整体乘车体验来彻底变革人们来往欧洲各国旅行的方式。这一版的 Android 应用明显表现我们在这一方向上迈出了重要的一步。</p>
+
+<p>试图去变革欧洲的乘车体验绝对不是一件简单的事情。这意味着我们要完成大量的工作：了解各种各样的铁路运营商、研究他们各自的文档以及预订要求、集成他们的价格/时间表、将他们的服务接口绑定到我们的系统，等等等等。从用户的角度来看，这一切都是隐藏的，但却是至关重要的，而这只是冰山一角。确实，一次旅行的需求或者愿望起始于一个简单得不能再简单的搜索请求：从哪里来？到哪里去？什么时候？跟谁？尽管这些问题非常简单，但搜索的步骤在整个预订的环节是至关重要的。毕竟这是一次旅行的起点。在设计这个 Android 应用的过程中，我们始终不忘最初的理念，尽可能简化每一步的操作流程。在这篇文章中，我很乐意跟你们分享我是如何实现这个搜索体验以及我们如何利用动画来提升用户体验。</p>
 
 <p><a href="http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments/">Custom Animations With Fragments</a></p>
 
