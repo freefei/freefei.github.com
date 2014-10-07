@@ -2,94 +2,94 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/04/28/build-your-own-blog-with-octopress/</loc>
-        <lastmod>2014-06-23T22:53:57+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://ryanhoo.github.io/blog/2014/05/05/android-better-way-to-apply-custom-font/
         </loc>
-        <lastmod>2014-07-08T23:51:19+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://ryanhoo.github.io/blog/2014/05/26/the-ultimate-approach-to-crop-photos-on-android-1/
         </loc>
-        <lastmod>2014-06-23T22:53:57+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-2/
         </loc>
-        <lastmod>2014-06-23T22:53:57+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://ryanhoo.github.io/blog/2014/06/03/the-ultimate-approach-to-crop-photos-on-android-3/
         </loc>
-        <lastmod>2014-07-18T18:03:50+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/06/04/build-android-cache-module-1/</loc>
-        <lastmod>2014-07-18T18:03:50+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/06/05/build-android-cache-module-2/</loc>
-        <lastmod>2014-06-23T22:53:57+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/06/17/build-android-cache-module-3/</loc>
-        <lastmod>2014-06-19T23:01:57+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/06/26/do-not-use-timer-in-android/</loc>
-        <lastmod>2014-06-26T21:39:04+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/07/08/google-is-making-android-a-beautiful/</loc>
-        <lastmod>2014-07-20T22:24:52+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/07/11/checkout-files-from-another-branch/</loc>
-        <lastmod>2014-07-11T12:13:32+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://ryanhoo.github.io/blog/2014/07/16/step-by-step-implement-parallax-animation-for-splash-screen-of-zhihu/
         </loc>
-        <lastmod>2014-08-08T17:39:29+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://ryanhoo.github.io/blog/2014/08/12/agreeing-to-the-xcode-license-from-the-command-line/
         </loc>
-        <lastmod>2014-08-12T21:43:43+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/09/17/android-webview-setdomstorageenabled/</loc>
-        <lastmod>2014-09-30T21:36:20+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/2014/09/30/custom-animations-with-fragments/</loc>
-        <lastmod>2014-10-07T21:09:33+08:00</lastmod>
+        <lastmod>2014-10-07T21:17:05+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/about/</loc>
-        <lastmod>2014-08-08T17:43:06+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/archives/</loc>
-        <lastmod>2014-10-07T21:09:33+08:00</lastmod>
+        <lastmod>2014-10-07T21:17:05+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/blog/categories/</loc>
-        <lastmod>2014-04-29T14:27:43+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/</loc>
-        <lastmod>2014-10-07T21:09:33+08:00</lastmod>
+        <lastmod>2014-10-07T21:17:05+08:00</lastmod>
     </url>
     <url>
         <loc>http://ryanhoo.github.io/robots.txt</loc>
-        <lastmod>2014-04-28T21:24:18+08:00</lastmod>
+        <lastmod>2014-10-07T21:14:43+08:00</lastmod>
     </url>
 </urlset>
