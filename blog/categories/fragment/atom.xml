@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fragment | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/fragment/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-10-06T23:22:06+08:00</updated>
+  <updated>2014-10-07T20:57:49+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -45,6 +45,8 @@
 <p><img src="/images/blog/android/search_android.gif" alt="search android" /></p>
 
 <p><a href="http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_android.mp4">播放 mp4</a></p>
+
+<p>通过我们精心设计的过渡动画，上面的示例看起来表现不错。确实，如果没有这些过渡动画的话，这些功能将会变得无法使用。给应用加入适当的过渡动画是一个丰富用户体验的好办法，它让用户直观的理解到他们每一个行为所带来的结果。如牛顿所说，每一个行动必有一个结果：过渡解释了 UI 切换间的变化。从一个屏幕切换到另一个屏幕时，它能避免给人带来『屏幕堆砌』的印象。它让用户觉得整个应用都是由一个屏幕构成的，里面的 UI 元素通过动画来显示或者隐藏应用的某一部分。换句话说，过渡动画打破了传统疆界并使得应用导航更为自然。</p>
 
 ]]></content>
   </entry>
