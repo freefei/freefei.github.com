@@ -20,7 +20,7 @@ desc: "在过去的几个月里，我一直忙于从无到有的开发一个 And
 
 ## 从网页端到移动端
 
-当我到 Capitaine Train 并开始着手 Android 应用的开发工作时，我先浏览了当下所有进行中的项目产品。比如 iOS 应用，当时还没有发布，但是已经快速成型了。另外的，比如我们的 Web 端应用，已经公开面向大众并且在用户中非常受欢迎。我那时的主要工作是构建一个能让用户觉得他们在用最好的 Android 应用订票的产品。而且这个应用必须反应出 Capitaine Train 的本质以及Android 风格的外观。由于当时 Web 应用是唯一发布的，显然我大部分的草稿都是基于它的。这是 [capitainetrain.com][capitainetrain.com] 的搜索表单：
+当我到 Capitaine Train 并开始着手 Android 应用的开发工作时，我先浏览了当下所有进行中的项目产品。比如 iOS 应用，当时还没有发布，但是已经快速成型了。另外的，比如我们的 Web 端应用，已经公开面向大众并且在用户中非常受欢迎。我那时的主要工作是构建一个能让用户觉得他们在用最好的 Android 应用订票的产品。而且这个应用必须反应出 Capitaine Train 的本质以及Android 风格的外观。由于当时 Web 应用是唯一发布的，显然我大部分的草稿都是基于它的。这是 [capitainetrain.com](capitainetrain.com) 的搜索表单：
 
 ![search form][search form]
 
