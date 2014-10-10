@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Animation | Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/blog/categories/animation/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-10-08T17:05:04+08:00</updated>
+  <updated>2014-10-10T18:16:18+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -50,7 +50,13 @@
 
 <h2 id="section-1">过渡动画分解</h2>
 
-<p>过渡动画通常很快而且一闪即逝令人难以察觉。</p>
+<p>过渡动画通常很快而且一闪即逝令人难以察觉。为了更好的理解动画细节、创建动画且（或）逆向工程，可以考虑让动画慢下来，结果将会非常有意思。如果你有应用源码的话，显然可以增加动画的时间值。不然的话，你需要录制应用的操作视频然后一帧一帧的看慢动作。幸运的是，Android 给我们提供了一个非常有用的技巧：开发者模式下有一个选项叫做『动画时长调整』(Animator duration scale)，顾名思义，这个选项可以调整系统级别的动画时长。</p>
+
+<p>为了更好的理解当搜索表单与时间编辑模式切换时发生了什么，让我们用上面提到的技巧来一窥究竟。下面的屏幕录制是在普通动画 10 倍（10x）的时长下进行的：</p>
+
+<p><img src="/images/blog/android/search_android_slow.gif" alt="search android slow" /></p>
+
+<p><a href="http://cyrilmottier.com/media/2014/05/custom-animations-with-fragments/search_android_slow.mp4">播放 mp4</a></p>
 
 <p><a href="http://cyrilmottier.com/2014/05/20/custom-animations-with-fragments">未完待续…</a></p>
 
