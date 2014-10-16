@@ -1,24 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Git | Ryan Hoo]]></title>
-  <link href="http://ryanhoo.github.io/blog/categories/git/atom.xml" rel="self"/>
-  <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-10-16T18:09:01+08:00</updated>
-  <id>http://ryanhoo.github.io/</id>
-  <author>
-    <name><![CDATA[Ryan Hoo]]></name>
-    <email><![CDATA[ryan.hoo.j@gmail.com]]></email>
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Github ≠ 有 Github 帐号 - Ryan Hoo</title>
+	<meta name="author" content="Ryan Hoo">
 
-  
-  <entry>
-    <title type="html"><![CDATA[Github ≠ 有 Github 帐号]]></title>
-    <link href="http://ryanhoo.github.io/blog/2014/10/16/why-and-how-to-use-github/"/>
-    <updated>2014-10-16T17:58:51+08:00</updated>
-    <id>http://ryanhoo.github.io/blog/2014/10/16/why-and-how-to-use-github</id>
-    <content type="html"><![CDATA[<ul id="markdown-toc">
+	
+	<meta name="description" content="Github ≠ 有 Github 帐号 Github ≠ 有 Github 帐号 Markdown 你真的会用 Git? rebase 是什么东西？好吃吗？ 不小心 reset –hard 了，代码全没了！ merge 之外，另有一番天地 好好写 commit message! 分享与协作 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ryan Hoo" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ryanhoo.github.io/blog/2014/10/16/why-and-how-to-use-github/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		document.write("<img src='http://www.gravatar.com/avatar/" + MD5("ryan.hoo.j@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+	</script>
+</div>
+<h1><a href="/">Ryan Hoo</a></h1>
+<p class="subtitle">Hi! This is ryan's tech utopia. I'm on my way to a full-stack engineer. Currently focusing on making awesome android, iOS apps and hybrid programming skills. Big fan of Cordova, AngularJS, CoffeeScript and much more...</p>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/categories">Categories</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+    <li><a href="/about/">About</a></li>
+</ul></nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+		<a class="github" href="https://github.com/ryanhoo" title="GitHub">GitHub</a>
+		
+		
+		<a class="email" href="mailto:ryan.hoo.j@gmail.com" title="Email">Email</a>
+		
+		
+		<a class="weibo" href="http://www.weibo.com/sanyufang" title="Weibo">Weibo</a>
+		
+		
+		
+		<a class="google" href="https://plus.google.com/+RyanHooGeek" rel="author" title="Google+">Google+</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Github ≠ 有 Github 帐号</h1>
+	<div class="entry-content" itemprop="articleBody"><ul id="markdown-toc">
   <li><a href="#github---github-">Github ≠ 有 Github 帐号</a>    <ul>
       <li><a href="#markdown">Markdown</a></li>
       <li><a href="#git">你真的会用 Git?</a>        <ul>
@@ -129,34 +193,86 @@
 
 <p>另外也别光说不练，贴上我的 <a href="https://github.com/ryanhoo">Github</a>，其实还有很多改善的地方。如前面所说：我知道自己无知，我在努力。;-)</p>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Git 从其它分支提取指定文件]]></title>
-    <link href="http://ryanhoo.github.io/blog/2014/07/11/checkout-files-from-another-branch/"/>
-    <updated>2014-07-11T11:38:28+08:00</updated>
-    <id>http://ryanhoo.github.io/blog/2014/07/11/checkout-files-from-another-branch</id>
-    <content type="html"><![CDATA[<p>在 Git 多个分支之间，使用 <strong>merge</strong> 或者 <strong>rebase</strong> 可以合并分支内容，非常方便，但是在特殊情况下，我需要从另外一个分支拉取一个或者某个指定的文件(夹)，手动 copy 代码当然可以，但是身为大程序猿，何须做这么接地气的事情？使用 <code>git checkout</code> 就可以轻松做到。</p>
+</div>
 
-<h2 id="section">应用场景</h2>
+</article>
 
-<h3 id="a">A</h3>
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style addthis_16x16_style">
+	
+	<a class="addthis_button_sinaweibo"></a>
+	
+	
+	<a class="addthis_button_facebook"></a>
+	
+	
+	<a class="addthis_button_twitter"></a>
+	
+	
+	
+	<a class="addthis_button_compact"></a>
+	<a class="addthis_counter addthis_bubble_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid="></script>
+</div>
 
-<p>我在 feature/A 分支下工作，在即将完成的时候，接到 PM 老爷的通知，这个功能要大改，基本就报废了。重新开一个 branch ，发现新需求下，model 定义还是一样的，而我只需要 model 下那几个文件。</p>
 
-<h3 id="b">B</h3>
 
-<p>前几日用 NDK ，编译 .so 文件的时候，不知道什么问题，将 armeabi 目录下其它的 .so 文件都删除掉了，看到 git commit message 里提示删除，但是项目跑通没问题，当时就没在意。过了两天测试发现地图老是 crash ，发现了原因那就好办了~</p>
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
 
-<p>不过万一其它分支也没有这个文件肿么办？不要紧，<code>git reset --hard [delete commit hashcode]</code> 历史回溯到那个删除的节点，然后 在那个节点 folk 一个新分支，再将当前分支更新 <code>git reset  --hard origin/[remote branch]</code> ，在按照上面提到的思路执行就 ok 了。</p>
+    Ryan Hoo
 
-<h2 id="section-1">从其它分支提取文件</h2>
+<br/>
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
 
-<p><code>
-git checkout [branch] -- [file name]
-</code></p>
-]]></content>
-  </entry>
-  
-</feed>
+
+<script type="text/javascript">
+      var disqus_shortname = 'ryanhoo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ryanhoo.github.io/blog/2014/10/16/why-and-how-to-use-github/';
+        var disqus_url = 'http://ryanhoo.github.io/blog/2014/10/16/why-and-how-to-use-github/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42350714-2']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+		</div>
+	</div>
+</body>
+</html>
