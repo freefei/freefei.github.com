@@ -11,7 +11,6 @@ desc: "我想，现在很多程序员都对 Github 存在误解。大多都是�
 * Contents
 {:toc}
 
-# Github ≠ 有 Github 帐号
 我想，现在很多程序员都对 Github 存在误解。
 
 大多都是觉得『虽不明，但觉厉』的样子，以为有个 Github 帐号就算是世界级的程序员了。
@@ -57,7 +56,7 @@ Git 的学习曲线确实相对陡峭，除了基础的哲学理念让人糊涂�
 与其哭着重新写一遍，不如了解下 Git ``DVCS`` 是用来干嘛的。
 ``git reflog`` 找到自己的提交记录，``git cherry-pick [commit hash code]``，喏，代码还在呢。
 
-## merge 之外，另有一番天地
+### merge 之外，另有一番天地
 
 ``git rebase --onto``
 ``git rebase -i``
