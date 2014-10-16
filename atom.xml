@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hoo]]></title>
   <link href="http://ryanhoo.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhoo.github.io/"/>
-  <updated>2014-10-16T18:09:01+08:00</updated>
+  <updated>2014-10-16T18:11:45+08:00</updated>
   <id>http://ryanhoo.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hoo]]></name>
@@ -19,21 +19,17 @@
     <updated>2014-10-16T17:58:51+08:00</updated>
     <id>http://ryanhoo.github.io/blog/2014/10/16/why-and-how-to-use-github</id>
     <content type="html"><![CDATA[<ul id="markdown-toc">
-  <li><a href="#github---github-">Github ≠ 有 Github 帐号</a>    <ul>
-      <li><a href="#markdown">Markdown</a></li>
-      <li><a href="#git">你真的会用 Git?</a>        <ul>
-          <li><a href="#rebase-">rebase 是什么东西？好吃吗？</a></li>
-          <li><a href="#reset---hard-">不小心 reset –hard 了，代码全没了！</a></li>
-        </ul>
-      </li>
+  <li><a href="#markdown">Markdown</a></li>
+  <li><a href="#git">你真的会用 Git?</a>    <ul>
+      <li><a href="#rebase-">rebase 是什么东西？好吃吗？</a></li>
+      <li><a href="#reset---hard-">不小心 reset –hard 了，代码全没了！</a></li>
       <li><a href="#merge-">merge 之外，另有一番天地</a></li>
-      <li><a href="#commit-message">好好写 commit message!</a></li>
-      <li><a href="#github-">分享与协作 —— Github 之真义</a></li>
     </ul>
   </li>
+  <li><a href="#commit-message">好好写 commit message!</a></li>
+  <li><a href="#github-">分享与协作 —— Github 之真义</a></li>
 </ul>
 
-<h1 id="github---github-">Github ≠ 有 Github 帐号</h1>
 <p>我想，现在很多程序员都对 Github 存在误解。</p>
 
 <p>大多都是觉得『虽不明，但觉厉』的样子，以为有个 Github 帐号就算是世界级的程序员了。</p>
@@ -83,7 +79,7 @@
 <p>与其哭着重新写一遍，不如了解下 Git <code>DVCS</code> 是用来干嘛的。
 <code>git reflog</code> 找到自己的提交记录，<code>git cherry-pick [commit hash code]</code>，喏，代码还在呢。</p>
 
-<h2 id="merge-">merge 之外，另有一番天地</h2>
+<h3 id="merge-">merge 之外，另有一番天地</h3>
 
 <p><code>git rebase --onto</code>
 <code>git rebase -i</code>
