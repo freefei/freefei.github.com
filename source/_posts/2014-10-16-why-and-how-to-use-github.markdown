@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Github ≠ 有 Github 帐号"
+title: "有 Github 帐号 ≠ Github"
 date: 2014-10-16 17:58:51 +0800
 comments: true
 categories: [Git]
